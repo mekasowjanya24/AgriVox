@@ -4,6 +4,7 @@ dotenv.config();
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import { connectDB, disconnectDB } from '../config/db.js';
