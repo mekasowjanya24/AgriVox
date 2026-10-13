@@ -137,13 +137,19 @@ export const fetchPricesFromAgmarknetOrSeed = async () => {
     }
   }
 
-  // Fallback to data/prices_seed.csv
-  const seedPath = path.resolve(__dirname, '../../../data/prices_seed.csv');
-  if (fs.existsSync(seedPath)) {
+  // Fallback to data/prices_seed.csv (check both server/data and root data/)
+  const candidatePaths = [
+    path.resolve(__dirname, '../../data/prices_seed.csv'),
+    path.resolve(__dirname, '../../../data/prices_seed.csv'),
+    path.resolve(process.cwd(), 'data/prices_seed.csv'),
+    path.resolve(process.cwd(), '../data/prices_seed.csv'),
+  ];
+  const seedPath = candidatePaths.find((p) => fs.existsSync(p));
+  if (seedPath) {
     const result = await parseAndUpsertPriceCSV(seedPath);
     return { source: 'seed-csv', ...result };
   } else {
-    throw new Error('Seed price CSV not found at ' + seedPath);
+    throw new Error('Seed price CSV not found. Checked: ' + candidatePaths.join(', '));
   }
 };
 

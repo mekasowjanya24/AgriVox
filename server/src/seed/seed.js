@@ -182,8 +182,14 @@ export const runSeed = async () => {
   ]);
   console.log('[Seed] Created 2 Harvest sales records.');
 
-  // 7. Load data/prices_seed.csv
-  const seedCSVPath = path.resolve(__dirname, '../../../data/prices_seed.csv');
+  // 7. Load prices_seed.csv (check both server/data and root data/)
+  const candidatePaths = [
+    path.resolve(__dirname, '../../data/prices_seed.csv'),
+    path.resolve(__dirname, '../../../data/prices_seed.csv'),
+    path.resolve(process.cwd(), 'data/prices_seed.csv'),
+    path.resolve(process.cwd(), '../data/prices_seed.csv'),
+  ];
+  const seedCSVPath = candidatePaths.find((p) => fs.existsSync(p)) || candidatePaths[0];
   console.log('[Seed] Loading price dataset from:', seedCSVPath);
   const priceResult = await parseAndUpsertPriceCSV(seedCSVPath);
   console.log(`[Seed] Loaded price dataset: ${priceResult.total} prices imported.`);
