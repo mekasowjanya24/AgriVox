@@ -4,22 +4,31 @@ let mongoMemoryServer = null;
 
 export const connectDB = async (customUri = null) => {
   const uri = customUri || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/agrivox';
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // Sanitize URI for safe console logging (hide user:password if present)
+  const safeUri = uri.replace(/\/\/[^@]+@/, '//***:***@');
 
   try {
     if (uri) {
-      // Try connecting to provided URI with a 2s serverSelectionTimeout
+      // 10s timeout allows MongoDB Atlas cloud handshake and replica set election
       await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 2500,
+        serverSelectionTimeoutMS: 10000,
       });
-      console.log(`[AgriVox] Connected to MongoDB at: ${uri}`);
+      console.log(`[AgriVox] Successfully connected to MongoDB at: ${safeUri}`);
       return;
     }
   } catch (err) {
-    console.warn(`[AgriVox] Could not connect to external MongoDB (${err.message}). Falling back to MongoMemoryServer...`);
+    console.error(`[AgriVox] MongoDB connection error (${safeUri}):`, err.message);
+    if (isProduction || process.env.MONGO_URI) {
+      // In production or when explicit MONGO_URI is set, do not silently fallback to ephemeral memory DB
+      throw new Error(`Failed to connect to MongoDB Atlas (${safeUri}): ${err.message}`);
+    }
+    console.warn('[AgriVox] Falling back to In-Memory MongoDB for local development/testing...');
   }
 
-  // Fallback to MongoMemoryServer if not connected
-  if (mongoose.connection.readyState === 0) {
+  // Fallback to MongoMemoryServer only in non-production local development
+  if (mongoose.connection.readyState === 0 && !isProduction) {
     try {
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       mongoMemoryServer = await MongoMemoryServer.create();

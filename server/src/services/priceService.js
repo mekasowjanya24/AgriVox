@@ -148,7 +148,7 @@ export const fetchPricesFromAgmarknetOrSeed = async () => {
 };
 
 export const getOrGenerateForecast = async (commodity, market, horizon = 14, force = false) => {
-  const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+  const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
 
   if (!force) {
     // Check if generated within 24 hours
@@ -188,7 +188,7 @@ export const getOrGenerateForecast = async (commodity, market, horizon = 14, for
     const response = await axios.post(
       `${ML_SERVICE_URL}/forecast`,
       { series, horizon: Number(horizon) },
-      { timeout: 15000 }
+      { timeout: 30000 } // 30s allows for cloud cold-start spin-ups on platforms like Render
     );
 
     const { points, model, mape } = response.data;

@@ -6,14 +6,15 @@ import { connectDB, disconnectDB } from './config/db.js';
 import { startPriceSyncJob } from './jobs/priceSyncJob.js';
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 const startServer = async () => {
   try {
     await connectDB();
     startPriceSyncJob();
 
-    const server = app.listen(PORT, () => {
-      console.log(`[AgriVox Server] Running on http://localhost:${PORT}`);
+    const server = app.listen(PORT, HOST, () => {
+      console.log(`[AgriVox Server] Running on http://${HOST}:${PORT}`);
     });
 
     // Graceful shutdown

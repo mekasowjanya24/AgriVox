@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+// Read backend API URL from Vite environment variable
+const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+export const baseURL = rawApiUrl
+  ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`)
+  : '/api';
 
 export const api = axios.create({
-  baseURL: API_BASE ? `${API_BASE}/api` : '/api',
+  baseURL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -57,7 +61,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(`${API_BASE ? `${API_BASE}/api` : '/api'}/auth/refresh`, {}, { withCredentials: true });
+        const res = await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
         const newToken = res.data.data.accessToken;
         localStorage.setItem('agrivox_token', newToken);
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;

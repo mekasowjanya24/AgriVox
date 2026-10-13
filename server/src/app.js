@@ -22,18 +22,48 @@ const app = express();
 // Security Middleware
 app.use(helmet());
 
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+// Configured origins for CORS (supports FRONTEND_URL and legacy CLIENT_URL, comma-separated)
+const configuredOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+]
+  .filter(Boolean)
+  .flatMap((url) => url.split(',').map((u) => u.trim().replace(/\/+$/, '')));
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or same origin)
-      if (!origin || origin === clientUrl || origin.startsWith('http://localhost:')) {
-        callback(null, true);
-      } else {
-        callback(null, true); // Permissive in dev, or restricted to clientUrl
+      // Allow requests with no origin (e.g. mobile apps, curl, Postman, server-to-server)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      const normalizedOrigin = origin.replace(/\/+$/, '');
+
+      // Check against configured frontend URLs (e.g. https://your-project.vercel.app)
+      if (configuredOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      // Allow local development and Vercel preview deployments
+      if (
+        normalizedOrigin.startsWith('http://localhost:') ||
+        normalizedOrigin.startsWith('http://127.0.0.1:') ||
+        normalizedOrigin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+
+      // Allow in development mode
+      if (process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 
