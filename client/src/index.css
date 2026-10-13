@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 18px; /* Rule 2: Minimum 18px body text */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: #fcfbf7;
+    color: #2b261f;
+    font-family: 'Inter', 'Noto Sans Telugu', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+
+  /* Large legible headings */
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+}
+
+/* Custom Earthy Utility Classes */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  min-width: 48px;
+  padding: 0.75rem 1.5rem;
+  background-color: #1e4d2f;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.05rem;
+  border-radius: 1rem;
+  box-shadow: 0 3px 6px -1px rgba(30, 77, 47, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+.btn-primary:active {
+  transform: scale(0.98);
+  background-color: #173f27;
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  min-width: 48px;
+  padding: 0.75rem 1.25rem;
+  background-color: #f2ebd9;
+  color: #382c21;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid #ded7c5;
+  border-radius: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+.btn-secondary:active {
+  transform: scale(0.98);
+  background-color: #e8dcbe;
+}
+
+.btn-accent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  min-width: 48px;
+  padding: 0.75rem 1.5rem;
+  background-color: #b45309;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.05rem;
+  border-radius: 1rem;
+  box-shadow: 0 3px 6px -1px rgba(180, 83, 9, 0.25);
+  transition: all 0.2s ease;
+}
+.btn-accent:active {
+  transform: scale(0.98);
+  background-color: #92400e;
+}
+
+.card-farmer {
+  background-color: #ffffff;
+  border: 1px solid #eee8dc;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 8px -2px rgba(45, 38, 31, 0.06);
+  padding: 1.25rem;
+}
+
+.input-farmer {
+  width: 100%;
+  min-height: 52px;
+  padding: 0.75rem 1rem;
+  font-size: 1.05rem;
+  background-color: #ffffff;
+  border: 1.5px solid #ded7c5;
+  border-radius: 0.875rem;
+  color: #2b261f;
+  transition: border-color 0.2s ease;
+}
+.input-farmer:focus {
+  outline: none;
+  border-color: #2b7847;
+  box-shadow: 0 0 0 3px rgba(43, 120, 71, 0.15);
+}
+
+/* Pulsing mic animation */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(43, 120, 71, 0.6);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px rgba(43, 120, 71, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(43, 120, 71, 0);
+  }
+}
+
+.mic-recording {
+  animation: pulse-ring 1.8s infinite;
+}

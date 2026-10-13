@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AgriVox - Comprehensive Project Report</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 15mm 20mm 15mm;
+      @bottom-right {
+        content: counter(page);
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-size: 9pt;
+        color: #736353;
+      }
+      @bottom-left {
+        content: "AgriVox: Voice-First Farm Finance & Mandi Price Advisory Platform";
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-size: 8pt;
+        color: #8c7b6b;
+      }
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #2b231a;
+      line-height: 1.55;
+      font-size: 10pt;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Print Break Utilities */
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+    }
+    .avoid-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 3px solid #1e4d2f;
+      padding: 35px 30px;
+      background: linear-gradient(180deg, #fdfbf7 0%, #f7f3e8 100%);
+      box-sizing: border-box;
+    }
+    .cover-header {
+      border-bottom: 2px solid #1e4d2f;
+      padding-bottom: 20px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 8.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-primary {
+      background: #1e4d2f;
+      color: #ffffff;
+    }
+    .badge-secondary {
+      background: #e2d9c5;
+      color: #3b3024;
+    }
+    .cover-title {
+      font-size: 32pt;
+      font-weight: 800;
+      color: #1e4d2f;
+      margin: 15px 0 5px 0;
+      letter-spacing: -0.5px;
+    }
+    .cover-subtitle {
+      font-size: 14pt;
+      color: #4a3e31;
+      font-weight: 600;
+      margin: 0;
+    }
+    .cover-pitch {
+      font-size: 11pt;
+      color: #5c4d3d;
+      margin-top: 15px;
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .cover-body {
+      margin: 30px 0;
+      background: #ffffff;
+      padding: 20px 25px;
+      border-radius: 8px;
+      border: 1px solid #ded4bf;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .meta-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee5d3;
+      font-size: 10pt;
+    }
+    .meta-table td.label {
+      font-weight: 700;
+      color: #1e4d2f;
+      width: 35%;
+    }
+    .cover-footer {
+      border-top: 2px solid #1e4d2f;
+      padding-top: 15px;
+      font-size: 9pt;
+      color: #695b4c;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Headings */
+    h1 {
+      color: #1e4d2f;
+      font-size: 19pt;
+      font-weight: 800;
+      border-bottom: 2px solid #2b7847;
+      padding-bottom: 6px;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      page-break-after: avoid;
+    }
+    h2 {
+      color: #2b7847;
+      font-size: 13.5pt;
+      font-weight: 700;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      border-left: 4px solid #1e4d2f;
+      padding-left: 10px;
+      page-break-after: avoid;
+    }
+    h3 {
+      color: #4a3e31;
+      font-size: 11pt;
+      font-weight: 700;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+    p, li {
+      font-size: 9.8pt;
+      color: #2e261e;
+      text-align: justify;
+    }
+    ul, ol {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      padding-left: 22px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 8.8pt;
+      page-break-inside: avoid;
+    }
+    table.data-table th {
+      background: #1e4d2f;
+      color: #ffffff;
+      padding: 7px 10px;
+      text-align: left;
+      font-weight: 700;
+      border: 1px solid #1e4d2f;
+    }
+    table.data-table td {
+      padding: 6px 10px;
+      border: 1px solid #ded5c2;
+      vertical-align: top;
+    }
+    table.data-table tr:nth-child(even) {
+      background: #fbf9f4;
+    }
+
+    /* Callout & Cards */
+    .callout {
+      background: #f4efe4;
+      border-left: 4px solid #1e4d2f;
+      padding: 10px 14px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 9.2pt;
+    }
+    .callout-success {
+      background: #edf7ed;
+      border-left-color: #2b7847;
+    }
+    .callout-warn {
+      background: #fff8e6;
+      border-left-color: #d97706;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #201c18;
+      color: #f5f2eb;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 8.2pt;
+      overflow-x: auto;
+      margin: 10px 0;
+      line-height: 1.4;
+      page-break-inside: avoid;
+    }
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: #eee8dc;
+      color: #782618;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 8.8pt;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Diagrams */
+    .diagram-container {
+      background: #faf8f3;
+      border: 1px solid #dfd7c5;
+      border-radius: 8px;
+      padding: 14px;
+      margin: 14px 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .diagram-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #5c4e3e;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Images */
+    .screenshot-grid {
+      display: flex;
+      gap: 12px;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+    .screenshot-item {
+      flex: 1;
+      border: 1px solid #d4cbb8;
+      border-radius: 6px;
+      padding: 6px;
+      background: #ffffff;
+      text-align: center;
+    }
+    .screenshot-item img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      max-height: 280px;
+      object-fit: contain;
+    }
+    .screenshot-caption {
+      font-size: 8pt;
+      font-weight: 600;
+      color: #5c4e3e;
+      margin-top: 5px;
+    }
+
+    /* TOC */
+    .toc-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 9.3pt;
+      border-bottom: 1px dotted #ccc2ad;
+      padding-bottom: 2px;
+    }
+    .toc-num {
+      font-weight: 700;
+      color: #1e4d2f;
+      width: 28px;
+    }
+    .toc-title {
+      flex: 1;
+    }
+
+    /* Formula box */
+    .formula-box {
+      background: #f7f4ea;
+      border: 1px solid #dcd4c0;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-family: 'Times New Roman', Georgia, serif;
+      font-size: 11pt;
+      text-align: center;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== COVER PAGE ==================== -->
+  <div class="cover-page">
+    <div class="cover-header">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="badge badge-primary">Final Project Technical Examination Report</span>
+        <span class="badge badge-secondary">Production-Grade Release v1.0</span>
+      </div>
+      <h1 class="cover-title">AgriVox</h1>
+      <p class="cover-subtitle">Voice-First Farm Finance &amp; Mandi Price Advisory Platform</p>
+      <p class="cover-pitch">"A resilient, offline-first voice bookkeeping and machine learning market advisory Progressive Web App empowering smallholder farmers to track farm profitability and optimize crop selling decisions in Telugu and English."</p>
+    </div>
+
+    <div class="cover-body">
+      <table class="meta-table">
+        <tr>
+          <td class="label">Project Title:</td>
+          <td>AgriVox (రైతు ఆదాయ వేదిక)</td>
+        </tr>
+        <tr>
+          <td class="label">Domain &amp; Field:</td>
+          <td>Agricultural Informatics, Offline-First Mobile Systems &amp; Predictive Analytics</td>
+        </tr>
+        <tr>
+          <td class="label">Architecture:</td>
+          <td>Tri-Tier Distributed Microservices (React PWA + Express REST + Flask ML)</td>
+        </tr>
+        <tr>
+          <td class="label">Primary Target Users:</td>
+          <td>Smallholder &amp; Marginal Farmers in Telangana/AP with low digital literacy</td>
+        </tr>
+        <tr>
+          <td class="label">Key Technologies:</td>
+          <td>React 18, Dexie.js (IndexedDB), Node.js/Express, MongoDB, Python Statsmodels, PDFKit</td>
+        </tr>
+        <tr>
+          <td class="label">Test Coverage:</td>
+          <td>36/36 Automated Unit &amp; Integration Tests (19 Jest, 14 Vitest, 3 Pytest)</td>
+        </tr>
+        <tr>
+          <td class="label">Documentation Date:</td>
+          <td>October 2026</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="cover-footer">
+      <span>AgriVox Engineering Team</span>
+      <span>Confidential &bull; Academic &amp; Project Evaluation Review</span>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== TABLE OF CONTENTS ==================== -->
+  <h1>Table of Contents</h1>
+  <div style="margin-top: 20px;">
+    <div class="toc-item"><span class="toc-num">1.</span><span class="toc-title">Executive Summary &amp; Problem Statement</span></div>
+    <div class="toc-item"><span class="toc-num">2.</span><span class="toc-title">Objectives &amp; Implemented Features Matrix (F1 &ndash; F13)</span></div>
+    <div class="toc-item"><span class="toc-num">3.</span><span class="toc-title">Technology Stack &amp; Architectural Justifications</span></div>
+    <div class="toc-item"><span class="toc-num">4.</span><span class="toc-title">End-to-End System Architecture (With Microservices Topology)</span></div>
+    <div class="toc-item"><span class="toc-num">5.</span><span class="toc-title">Codebase Repository Structure &amp; File Catalog</span></div>
+    <div class="toc-item"><span class="toc-num">6.</span><span class="toc-title">Database Schema Design &amp; Entity-Relationship Diagram</span></div>
+    <div class="toc-item"><span class="toc-num">7.</span><span class="toc-title">Backend Architecture: REST API Endpoints, Middleware &amp; Security</span></div>
+    <div class="toc-item"><span class="toc-num">8.</span><span class="toc-title">MongoDB Aggregation Analytics Pipelines (Stage-by-Stage Breakdown)</span></div>
+    <div class="toc-item"><span class="toc-num">9.</span><span class="toc-title">Frontend Architecture: Pages, Components, State &amp; i18n Engine</span></div>
+    <div class="toc-item"><span class="toc-num">10.</span><span class="toc-title">Voice-Driven Expense Entry Pipeline &amp; NLP Parsing Logic</span></div>
+    <div class="toc-item"><span class="toc-num">11.</span><span class="toc-title">Offline-First Architecture, Outbox Queue &amp; Conflict-Free Sync</span></div>
+    <div class="toc-item"><span class="toc-num">12.</span><span class="toc-title">Machine Learning Price Forecasting &amp; Smart Selling Advisor</span></div>
+    <div class="toc-item"><span class="toc-num">13.</span><span class="toc-title">Bilingual PDF Report Generation &amp; Admin Panel</span></div>
+    <div class="toc-item"><span class="toc-num">14.</span><span class="toc-title">Human-Centered UI/UX Design System for Low-Literacy Farmers</span></div>
+    <div class="toc-item"><span class="toc-num">15.</span><span class="toc-title">Verification, Automated Testing &amp; Quality Assurance</span></div>
+    <div class="toc-item"><span class="toc-num">16.</span><span class="toc-title">Local Execution &amp; Containerized Deployment Guide</span></div>
+    <div class="toc-item"><span class="toc-num">17.</span><span class="toc-title">Technical Challenges Encountered &amp; Engineering Resolutions</span></div>
+    <div class="toc-item"><span class="toc-num">18.</span><span class="toc-title">Limitations &amp; Future Development Roadmap</span></div>
+    <div class="toc-item"><span class="toc-num">19.</span><span class="toc-title">Examiner Viva Voce Preparation Guide (26 In-Depth Technical Q&amp;As)</span></div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <h1>1. Executive Summary &amp; Problem Statement</h1>
+
+  <h2>1.1 Project Title &amp; Pitch</h2>
+  <p><strong>AgriVox</strong> is an offline-first, bilingual (Telugu &amp; English) Progressive Web Application designed for Indian smallholder farmers. It combines hands-free voice expense logging, real-time crop profitability analytics, and statistical machine learning mandi price forecasting with an intelligent Sell-Time Decision Advisor.</p>
+
+  <h2>1.2 Problem Statement</h2>
+  <p>Indian agriculture sustains more than 58% of rural livelihoods, yet smallholder and marginal farmers operate in severe financial vulnerability due to three systemic bottlenecks:</p>
+  <ul>
+    <li><strong>Lack of Real-Time Bookkeeping:</strong> Farmers incur recurring cash expenditures across seeds, fertilizers, chemical sprays, diesel, tractor hire, and daily coolie labour over a 4 to 6-month crop cycle. Because bookkeeping is manual or non-existent, farmers only evaluate financial health at season-end, often miscalculating net earnings and falling into predatory informal debt cycles.</li>
+    <li><strong>High Friction of Existing Digital Tools:</strong> Existing agricultural mobile applications rely on dense text forms, complex menus, and English-only terminology. For rural farmers aged 35&ndash;60 with low digital literacy and calloused hands working in muddy fields, typing alphanumeric characters on touchscreens is impractical.</li>
+    <li><strong>Asymmetric Market Information &amp; Distress Sales:</strong> Farmers routinely harvest crops during regional glut periods and immediately sell produce at whatever price local commission agents offer. Without reliable price trend forecasts and storage trade-off calculations, they fail to capture post-harvest price recovery, losing an estimated 15%&ndash;30% in potential farm income.</li>
+    <li><strong>Unreliable Rural Connectivity:</strong> Farmland and agricultural procurement yards frequently lack 4G/5G mobile connectivity. Cloud-only applications freeze, fail to save critical entries, and create data loss anxiety.</li>
+  </ul>
+
+  <div class="callout callout-success">
+    <strong>The AgriVox Solution:</strong> AgriVox solves all four challenges through: (1) Voice expense recording in conversational Telugu and English under 10 seconds; (2) An offline-first reactive IndexedDB store that queues writes with zero duplicates; (3) Live per-cycle and per-acre financial aggregations; and (4) A 14-day SARIMAX/Holt-Winters price forecasting engine that compares projected peak prices against warehouse storage holding costs to deliver clear <em>"Sell Now"</em> or <em>"Wait N Days"</em> advice.
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <h1>2. Objectives &amp; Implemented Features Matrix</h1>
+  <p>Every single functional requirement (F1 &ndash; F13) specified in the product specification was implemented, verified, and backed by automated tests.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 12%;">Feature ID</th>
+        <th style="width: 25%;">Feature Name</th>
+        <th style="width: 38%;">Implemented Functionality</th>
+        <th style="width: 25%;">Verification Evidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>F1</strong></td>
+        <td>Authentication &amp; Role-Based Authorization</td>
+        <td>Farmer and Admin registration/login with 10-digit phone and bcrypt-hashed password. Dual JWT tokens (15-min access token + 7-day HTTP-only rotating refresh token). Role guards. User data isolated by <code>userId</code>.</td>
+        <td><code>server/src/controllers/authController.js</code>, Passing Jest test <code>FR-AUTH-01</code> to <code>03</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F2</strong></td>
+        <td>Plot Management</td>
+        <td>Create, view, and delete farmland plots with name, acreage, soil classification (black, red, sandy, loamy, clay), village, and district. Active cycle protection prevents deletion of plots with growing crops.</td>
+        <td><code>server/src/controllers/plotController.js</code>, <code>client/src/pages/Plots.jsx</code>, <code>PlotForm.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F3</strong></td>
+        <td>Crop Cycle Management</td>
+        <td>Season cycles (Kharif, Rabi, Summer) tied to plots. Tracks sowing date, expected harvest date, status (active, harvested, closed), and live profit/loss per acre.</td>
+        <td><code>server/src/controllers/cycleController.js</code>, <code>client/src/pages/Cycles.jsx</code>, <code>CycleDetail.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F4</strong></td>
+        <td>Expense Bookkeeping</td>
+        <td>Manual expense tracking with 8 strict agricultural categories: seeds, fertilizer, pesticide, labour, irrigation, machinery, transport, other. Edit and delete operations.</td>
+        <td><code>server/src/controllers/expenseController.js</code>, <code>client/src/pages/AddExpense.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F5</strong></td>
+        <td>Voice Expense Entry</td>
+        <td>Web Speech API audio recording in Telugu (<code>te-IN</code>) and English (<code>en-IN</code>). Rule-based NLP grammar parsing digits, number words, item name, and category. Interactive confirmation card before persistence.</td>
+        <td><code>client/src/utils/voiceParser.js</code>, 10/10 test sentences passing in Vitest (<code>voiceParser.test.js</code>).</td>
+      </tr>
+      <tr>
+        <td><strong>F6</strong></td>
+        <td>Harvest &amp; Sales Logging</td>
+        <td>Record yield sold (quintals), market modal rate, buyer, mandi, and date. Option to mark cycle as harvested, dynamically calculating total revenue and net profit.</td>
+        <td><code>server/src/controllers/harvestController.js</code>, <code>client/src/pages/AddHarvest.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F7</strong></td>
+        <td>Profit &amp; Loss Dashboard</td>
+        <td>Real-time financial KPI cards (Net Profit, Profit/Acre, Total Revenue, Total Expense). Expense breakdown pie chart, season comparison bar chart, and recent ledger. Computed via MongoDB aggregation.</td>
+        <td><code>server/src/controllers/analyticsController.js</code>, <code>client/src/pages/Dashboard.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F8</strong></td>
+        <td>Offline-First PWA &amp; Sync</td>
+        <td>Full client functionality offline using Dexie.js (IndexedDB). Outbox FIFO queue captures offline writes with UUID clientIds. Automatic sync engine pushes changes and pulls delta updates with zero duplicate insertion.</td>
+        <td><code>client/src/services/syncEngine.js</code>, <code>client/src/db/index.js</code>, <code>sync.test.js</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F9</strong></td>
+        <td>Mandi Price Data &amp; Forecasting</td>
+        <td>Historical modal price tracking for Warangal and Khammam mandis across Paddy, Cotton, and Maize. 14-day forward predictions with 95% confidence bands and MAPE accuracy metrics.</td>
+        <td><code>ml-service/app.py</code>, <code>ml-service/forecast.py</code>, <code>server/src/controllers/priceController.js</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F10</strong></td>
+        <td>Sell-Time Decision Advisor</td>
+        <td>Evaluates daily price trajectory against farmer's storage cost (Rs/Qtl/Day). Recommends <em>Sell Now</em> or <em>Wait N Days</em> with projected additional net profit when gain exceeds 3% threshold.</td>
+        <td><code>server/src/controllers/priceController.js</code> (getAdvisor), <code>client/src/pages/Prices.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F11</strong></td>
+        <td>Season Report PDF Generator</td>
+        <td>Server-side PDF generation using PDFKit with Noto Sans Telugu font integration. Generates summary cards, metadata, complete expense tables, and harvest breakdown.</td>
+        <td><code>server/src/services/pdfReportService.js</code>, <code>client/src/pages/Reports.jsx</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F12</strong></td>
+        <td>Bilingual i18n Engine</td>
+        <td>Complete Telugu &amp; English localization using <code>i18next</code>. Segmented toggle in header. Intelligent bilingual term formatting so database fields cleanly render in active language.</td>
+        <td><code>client/src/i18n/index.js</code>, <code>client/src/utils/formatters.js</code>, <code>en.json</code>, <code>te.json</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>F13</strong></td>
+        <td>Admin Management Panel</td>
+        <td>Admin portal for user enable/disable toggling, bulk CSV price uploading via streaming upsert, on-demand mandi data refresh, and ML model retraining triggers.</td>
+        <td><code>client/src/pages/admin/*</code>, <code>server/src/controllers/adminController.js</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <h1>3. Technology Stack &amp; Architectural Justifications</h1>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Layer / Component</th>
+        <th style="width: 25%;">Technology Selected</th>
+        <th style="width: 57%;">Technical Justification &amp; Advantages</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Frontend Core</strong></td>
+        <td>React 18 + Vite</td>
+        <td>Component modularity, concurrent rendering for smooth UI transitions, fast Hot Module Replacement (HMR) during development, and minimal production bundle size (&lt; 440 KB gzip).</td>
+      </tr>
+      <tr>
+        <td><strong>CSS Styling</strong></td>
+        <td>Tailwind CSS</td>
+        <td>Atomic CSS utility architecture eliminates stylesheet bloat. Enables high-contrast, tactile earthy-green buttons (&ge; 48px touch targets) with zero CSS runtime overhead.</td>
+      </tr>
+      <tr>
+        <td><strong>Client Database</strong></td>
+        <td>Dexie.js (IndexedDB wrapper)</td>
+        <td>Provides asynchronous, transactional client-side storage capable of holding thousands of offline records with indexed lookups on <code>clientId</code>, <code>userId</code>, and <code>updatedAt</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Client Localization</strong></td>
+        <td>i18next + react-i18next</td>
+        <td>Standardized key-value translation infrastructure supporting runtime language switching without page reloads, parameter interpolation, and persistent local storage caching.</td>
+      </tr>
+      <tr>
+        <td><strong>Data Visualization</strong></td>
+        <td>Recharts (SVG based)</td>
+        <td>Declarative SVG rendering provides sharp, scalable financial charts on low-density mobile displays. Composed charts effortlessly merge historical lines and shaded 95% forecast bands.</td>
+      </tr>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>Node.js 20+ &amp; Express</td>
+        <td>Asynchronous event-driven I/O model handles concurrent requests from intermittent syncing clients efficiently. Rich ecosystem for JWT authentication, multipart streaming, and cron scheduling.</td>
+      </tr>
+      <tr>
+        <td><strong>Primary Database</strong></td>
+        <td>MongoDB 7.0+ &amp; Mongoose</td>
+        <td>Document-oriented structure naturally represents nested cycle entities, harvests, and polymorphic expenses. Native aggregation pipeline framework executes complex financial statistics in-engine.</td>
+      </tr>
+      <tr>
+        <td><strong>Machine Learning Service</strong></td>
+        <td>Python 3.11+, Flask &amp; statsmodels</td>
+        <td>Dedicated microservice decouples heavy mathematical time-series processing from the web API. Statsmodels offers mature, statistically rigorous SARIMAX and Holt-Winters implementations.</td>
+      </tr>
+      <tr>
+        <td><strong>Document Generation</strong></td>
+        <td>PDFKit</td>
+        <td>Vector-based server PDF generation with direct OpenType font embedding (Noto Sans Telugu), enabling crisp downloadable crop cycle audit certificates.</td>
+      </tr>
+      <tr>
+        <td><strong>Containerization</strong></td>
+        <td>Docker &amp; Docker Compose</td>
+        <td>Unified multi-stage container builds encapsulate environment variables, runtime versions, and networking across client (Nginx), server (Node), ML service (Python), and database (Mongo).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <h1>4. End-to-End System Architecture</h1>
+  <p>AgriVox implements a distributed, decoupled tri-tier architecture with an offline-first client tier, an Express REST API business logic tier, a dedicated Flask Machine Learning forecasting microservice, and a MongoDB persistence tier.</p>
+
+  <div class="diagram-container">
+    <svg width="680" height="340" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background style -->
+      <rect width="680" height="340" fill="#fdfbf7" rx="8" />
+
+      <!-- Client Layer Box -->
+      <rect x="20" y="20" width="200" height="300" fill="#ffffff" stroke="#1e4d2f" stroke-width="2" rx="6" />
+      <text x="120" y="42" font-family="sans-serif" font-size="12" font-weight="bold" fill="#1e4d2f" text-anchor="middle">CLIENT TIER (React PWA)</text>
+      <rect x="35" y="55" width="170" height="36" fill="#e8f3ec" stroke="#2b7847" rx="4" />
+      <text x="120" y="77" font-family="sans-serif" font-size="10" fill="#1e4d2f" text-anchor="middle">UI Pages &amp; Recharts</text>
+      <rect x="35" y="100" width="170" height="36" fill="#e8f3ec" stroke="#2b7847" rx="4" />
+      <text x="120" y="122" font-family="sans-serif" font-size="10" fill="#1e4d2f" text-anchor="middle">Web Speech Voice NLP</text>
+      <rect x="35" y="145" width="170" height="36" fill="#e8f3ec" stroke="#2b7847" rx="4" />
+      <text x="120" y="167" font-family="sans-serif" font-size="10" fill="#1e4d2f" text-anchor="middle">Service Worker &amp; Cache</text>
+      <rect x="35" y="190" width="170" height="36" fill="#e8f3ec" stroke="#2b7847" rx="4" />
+      <text x="120" y="212" font-family="sans-serif" font-size="10" fill="#1e4d2f" text-anchor="middle">Dexie.js IndexedDB Store</text>
+      <rect x="35" y="235" width="170" height="36" fill="#fef3c7" stroke="#d97706" rx="4" />
+      <text x="120" y="257" font-family="sans-serif" font-size="10" fill="#92400e" text-anchor="middle">Outbox Sync Engine</text>
+
+      <!-- Communication Arrow 1 -->
+      <line x1="220" y1="160" x2="270" y2="160" stroke="#1e4d2f" stroke-width="2" marker-end="url(#arrow)" />
+      <text x="245" y="152" font-family="sans-serif" font-size="8" fill="#4a3e31" text-anchor="middle">HTTPS / REST</text>
+
+      <!-- Backend Server Box -->
+      <rect x="270" y="20" width="190" height="300" fill="#ffffff" stroke="#1e4d2f" stroke-width="2" rx="6" />
+      <text x="365" y="42" font-family="sans-serif" font-size="12" font-weight="bold" fill="#1e4d2f" text-anchor="middle">SERVER TIER (Express)</text>
+      <rect x="285" y="55" width="160" height="34" fill="#f4efe4" stroke="#8c7b6b" rx="4" />
+      <text x="365" y="76" font-family="sans-serif" font-size="10" fill="#332a22" text-anchor="middle">JWT &amp; Cookie Auth Guard</text>
+      <rect x="285" y="98" width="160" height="34" fill="#f4efe4" stroke="#8c7b6b" rx="4" />
+      <text x="365" y="119" font-family="sans-serif" font-size="10" fill="#332a22" text-anchor="middle">CRUD &amp; Sync Handlers</text>
+      <rect x="285" y="141" width="160" height="34" fill="#f4efe4" stroke="#8c7b6b" rx="4" />
+      <text x="365" y="162" font-family="sans-serif" font-size="10" fill="#332a22" text-anchor="middle">Aggregation Analytics</text>
+      <rect x="285" y="184" width="160" height="34" fill="#f4efe4" stroke="#8c7b6b" rx="4" />
+      <text x="365" y="205" font-family="sans-serif" font-size="10" fill="#332a22" text-anchor="middle">Sell-Time Advisor Service</text>
+      <rect x="285" y="227" width="160" height="34" fill="#f4efe4" stroke="#8c7b6b" rx="4" />
+      <text x="365" y="248" font-family="sans-serif" font-size="10" fill="#332a22" text-anchor="middle">PDFKit Report Service</text>
+      <rect x="285" y="270" width="160" height="34" fill="#f4efe4" stroke="#8c7b6b" rx="4" />
+      <text x="365" y="291" font-family="sans-serif" font-size="10" fill="#332a22" text-anchor="middle">Agmarknet Cron Sync</text>
+
+      <!-- Communication Arrow 2: To Mongo -->
+      <line x1="460" y1="100" x2="510" y2="100" stroke="#1e4d2f" stroke-width="2" />
+      <text x="485" y="93" font-family="sans-serif" font-size="8" fill="#4a3e31" text-anchor="middle">Mongoose</text>
+
+      <!-- Database Box -->
+      <rect x="510" y="20" width="150" height="140" fill="#ffffff" stroke="#1e4d2f" stroke-width="2" rx="6" />
+      <text x="585" y="42" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e4d2f" text-anchor="middle">DATABASE TIER</text>
+      <rect x="522" y="55" width="126" height="26" fill="#e8f3ec" stroke="#2b7847" rx="3" />
+      <text x="585" y="72" font-family="sans-serif" font-size="9" fill="#1e4d2f" text-anchor="middle">Users / RefreshTokens</text>
+      <rect x="522" y="86" width="126" height="26" fill="#e8f3ec" stroke="#2b7847" rx="3" />
+      <text x="585" y="103" font-family="sans-serif" font-size="9" fill="#1e4d2f" text-anchor="middle">Plots / Cycles / Expenses</text>
+      <rect x="522" y="117" width="126" height="26" fill="#e8f3ec" stroke="#2b7847" rx="3" />
+      <text x="585" y="134" font-family="sans-serif" font-size="9" fill="#1e4d2f" text-anchor="middle">Harvests / Prices / FC</text>
+
+      <!-- Communication Arrow 3: To ML Service -->
+      <line x1="460" y1="230" x2="510" y2="230" stroke="#1e4d2f" stroke-width="2" />
+      <text x="485" y="222" font-family="sans-serif" font-size="8" fill="#4a3e31" text-anchor="middle">HTTP:8000</text>
+
+      <!-- ML Microservice Box -->
+      <rect x="510" y="180" width="150" height="140" fill="#ffffff" stroke="#b45309" stroke-width="2" rx="6" />
+      <text x="585" y="202" font-family="sans-serif" font-size="11" font-weight="bold" fill="#b45309" text-anchor="middle">ML SERVICE (Flask)</text>
+      <rect x="522" y="215" width="126" height="26" fill="#fef3c7" stroke="#d97706" rx="3" />
+      <text x="585" y="232" font-family="sans-serif" font-size="9" fill="#92400e" text-anchor="middle">SARIMAX (p,d,q)</text>
+      <rect x="522" y="246" width="126" height="26" fill="#fef3c7" stroke="#d97706" rx="3" />
+      <text x="585" y="263" font-family="sans-serif" font-size="9" fill="#92400e" text-anchor="middle">Holt-Winters ExpSmo</text>
+      <rect x="522" y="277" width="126" height="26" fill="#fef3c7" stroke="#d97706" rx="3" />
+      <text x="585" y="294" font-family="sans-serif" font-size="9" fill="#92400e" text-anchor="middle">7-Day MA Fallback</text>
+    </svg>
+    <div class="diagram-title">Figure 4.1: AgriVox Distributed Tri-Tier Architecture</div>
+  </div>
+
+  <h2>4.1 Data Flow Across Tiers</h2>
+  <ol>
+    <li><strong>Client Interaction &amp; Voice Transcription:</strong> The farmer dictates an expense into the mic. The browser's native Web Speech API processes audio locally or via OS speech providers. <code>voiceParser.js</code> extracts numerical and categorical entities.</li>
+    <li><strong>Local Write &amp; Immediate UI Update:</strong> If offline or online, the expense is immediately inserted into Dexie IndexedDB with an ephemeral <code>clientId</code> (UUIDv4) and queued into <code>db.outbox</code>. The UI reacts instantly (0ms network latency).</li>
+    <li><strong>Asynchronous Synchronization:</strong> The <code>SyncEngine</code> detects network connectivity, batches outbox writes, and transmits them to <code>/api/sync/pull</code>. The server upserts records via Mongoose using partial filter expression unique indexes on <code>(userId, clientId)</code>.</li>
+    <li><strong>Predictive Advisory Pipeline:</strong> When the farmer opens the Mandi Prices page, Express checks MongoDB for fresh forecasts. If older than 24 hours, Express transmits the historical price series to the Flask ML microservice (Port 8000), which trains candidates, calculates holdout MAPE, generates a 14-day forecast, and returns confidence bounds. Express executes the sell-time optimization algorithm and delivers the final advice to the React UI.</li>
+  </ol>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <h1>5. Codebase Repository Structure &amp; File Catalog</h1>
+  <p>The codebase is organized into clean domain modules following industry best practices:</p>
+
+  <pre>
+AgriVox/
+├── client/                     # Frontend Single Page PWA (React 18 + Vite)
+│   ├── public/                 # Static assets, PWA webmanifest, favicon
+│   ├── src/
+│   │   ├── api/client.js       # Axios instance with JWT interceptor & auto token refresh
+│   │   ├── components/         # Reusable UI widgets (Header, BottomNav, VoiceRecorder)
+│   │   ├── context/            # React Context providers (AuthContext, SyncContext)
+│   │   ├── db/index.js         # Dexie.js IndexedDB schema definitions & UUID helper
+│   │   ├── i18n/               # i18next configuration & JSON translation dictionaries
+│   │   ├── pages/              # 13 Application views (Dashboard, Prices, Reports, etc.)
+│   │   │   └── admin/          # Admin management screens (Users, Prices, Stats)
+│   │   ├── services/           # Background engines (syncEngine.js outbox processor)
+│   │   ├── utils/              # Pure utilities (formatters.js bilingual parser, voiceParser.js)
+│   │   ├── __tests__/          # Vitest test specs (voiceParser, i18n, sync engine)
+│   │   ├── App.jsx             # Main routing configuration with ProtectedRoute guards
+│   │   └── main.jsx            # React root mount point
+│   ├── vite.config.js          # Vite config with VitePWA plugin & API proxy
+│   └── package.json            # Client dependencies & scripts
+├── server/                     # Backend API Microservice (Node.js + Express)
+│   ├── src/
+│   │   ├── config/db.js        # Mongoose MongoDB connection lifecycle
+│   │   ├── controllers/        # Request handlers (auth, plots, cycles, analytics, prices)
+│   │   ├── middleware/         # Auth verification, role guard, rate limiting, error handler
+│   │   ├── models/             # 8 Mongoose Schemas (User, Plot, Cycle, Expense, Harvest, Price...)
+│   │   ├── routes/             # Express Route definitions matching SRS spec
+│   │   ├── seed/seed.js        # Seed script populating farmers, plots, cycles, expenses, prices
+│   │   ├── services/           # ML client, PDF generator (PDFKit), Agmarknet cron sync
+│   │   ├── app.js              # Express app configuration, security headers, middleware
+│   │   └── index.js            # Server entrypoint listening on port 5000
+│   ├── tests/server.test.js    # Supertest & Jest integration test suite (19 test cases)
+│   └── package.json            # Server dependencies
+├── ml-service/                 # Predictive Time-Series Microservice (Python + Flask)
+│   ├── app.py                  # Flask REST endpoints (/forecast, /retrain, /health)
+│   ├── forecast.py             # SARIMAX, Holt-Winters, 7-Day MA models & MAPE calculation
+│   ├── test_forecast.py        # Pytest test suite validating model outputs
+│   └── requirements.txt        # Flask, numpy, pandas, statsmodels, pytest
+├── data/
+│   └── prices_seed.csv         # 6,024 historical Mandi records (Warangal, Khammam)
+├── docs/                       # Project documentation, PRD, SRS, and reports
+├── docker-compose.yml          # Multi-container orchestration specification
+└── README.md                   # Complete architectural guide and setup instructions
+  </pre>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <h1>6. Database Design &amp; Entity-Relationship Diagram</h1>
+  <p>AgriVox utilizes MongoDB for flexible hierarchical document storage. Strict referential relationships and indexing rules guarantee data integrity across devices.</p>
+
+  <div class="diagram-container">
+    <svg width="680" height="260" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="680" height="260" fill="#fdfbf7" rx="8" />
+
+      <!-- USER -->
+      <rect x="20" y="20" width="130" height="100" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <rect x="20" y="20" width="130" height="24" fill="#1e4d2f" rx="4" />
+      <text x="85" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">User</text>
+      <text x="26" y="56" font-family="sans-serif" font-size="8" fill="#332a22">PK: _id (ObjectId)</text>
+      <text x="26" y="70" font-family="sans-serif" font-size="8" fill="#332a22">phone (Unique Index)</text>
+      <text x="26" y="84" font-family="sans-serif" font-size="8" fill="#332a22">role (farmer/admin)</text>
+      <text x="26" y="98" font-family="sans-serif" font-size="8" fill="#332a22">language, storageCost</text>
+
+      <!-- PLOT -->
+      <rect x="190" y="20" width="130" height="100" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <rect x="190" y="20" width="130" height="24" fill="#1e4d2f" rx="4" />
+      <text x="255" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Plot</text>
+      <text x="196" y="56" font-family="sans-serif" font-size="8" fill="#332a22">PK: _id (ObjectId)</text>
+      <text x="196" y="70" font-family="sans-serif" font-size="8" fill="#332a22">FK: userId -> User</text>
+      <text x="196" y="84" font-family="sans-serif" font-size="8" fill="#332a22">clientId (UUID)</text>
+      <text x="196" y="98" font-family="sans-serif" font-size="8" fill="#332a22">areaAcres, soilType</text>
+
+      <!-- CYCLE -->
+      <rect x="360" y="20" width="130" height="100" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <rect x="360" y="20" width="130" height="24" fill="#1e4d2f" rx="4" />
+      <text x="425" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Cycle</text>
+      <text x="366" y="56" font-family="sans-serif" font-size="8" fill="#332a22">PK: _id (ObjectId)</text>
+      <text x="366" y="70" font-family="sans-serif" font-size="8" fill="#332a22">FK: userId, plotId</text>
+      <text x="366" y="84" font-family="sans-serif" font-size="8" fill="#332a22">clientId (UUID)</text>
+      <text x="366" y="98" font-family="sans-serif" font-size="8" fill="#332a22">crop, season, year, status</text>
+
+      <!-- EXPENSE -->
+      <rect x="280" y="150" width="130" height="95" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <rect x="280" y="150" width="130" height="24" fill="#2b7847" rx="4" />
+      <text x="345" y="166" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Expense</text>
+      <text x="286" y="186" font-family="sans-serif" font-size="8" fill="#332a22">PK: _id (ObjectId)</text>
+      <text x="286" y="198" font-family="sans-serif" font-size="8" fill="#332a22">FK: cycleId -> Cycle</text>
+      <text x="286" y="210" font-family="sans-serif" font-size="8" fill="#332a22">FK: userId -> User</text>
+      <text x="286" y="222" font-family="sans-serif" font-size="8" fill="#332a22">category, amount, item</text>
+
+      <!-- HARVEST -->
+      <rect x="440" y="150" width="130" height="95" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <rect x="440" y="150" width="130" height="24" fill="#2b7847" rx="4" />
+      <text x="505" y="166" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Harvest</text>
+      <text x="446" y="186" font-family="sans-serif" font-size="8" fill="#332a22">PK: _id (ObjectId)</text>
+      <text x="446" y="198" font-family="sans-serif" font-size="8" fill="#332a22">FK: cycleId -> Cycle</text>
+      <text x="446" y="210" font-family="sans-serif" font-size="8" fill="#332a22">FK: userId -> User</text>
+      <text x="446" y="222" font-family="sans-serif" font-size="8" fill="#332a22">quantityQtl, pricePerQtl</text>
+
+      <!-- PRICE & FORECAST -->
+      <rect x="530" y="20" width="130" height="100" fill="#ffffff" stroke="#b45309" stroke-width="1.5" rx="4" />
+      <rect x="530" y="20" width="130" height="24" fill="#b45309" rx="4" />
+      <text x="595" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Price &amp; Forecast</text>
+      <text x="536" y="56" font-family="sans-serif" font-size="8" fill="#332a22">PK: _id (ObjectId)</text>
+      <text x="536" y="70" font-family="sans-serif" font-size="8" fill="#332a22">commodity, market, date</text>
+      <text x="536" y="84" font-family="sans-serif" font-size="8" fill="#332a22">min, max, modalPrice</text>
+      <text x="536" y="98" font-family="sans-serif" font-size="8" fill="#332a22">Compound: (comm, mkt, dt)</text>
+
+      <!-- Connections -->
+      <line x1="150" y1="70" x2="190" y2="70" stroke="#1e4d2f" stroke-width="1.5" />
+      <line x1="320" y1="70" x2="360" y2="70" stroke="#1e4d2f" stroke-width="1.5" />
+      <line x1="410" y1="120" x2="350" y2="150" stroke="#1e4d2f" stroke-width="1.5" />
+      <line x1="440" y1="120" x2="490" y2="150" stroke="#1e4d2f" stroke-width="1.5" />
+    </svg>
+    <div class="diagram-title">Figure 6.1: AgriVox Entity-Relationship (ER) Diagram</div>
+  </div>
+
+  <h2>6.1 Mongoose Collection Specifications &amp; Index Strategy</h2>
+
+  <h3>1. User Collection (<code>users</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId (Primary Key)</li>
+    <li><code>phone</code>: String (10 digits), <strong>Unique Index</strong></li>
+    <li><code>passwordHash</code>: String (bcrypt salt 10 hash)</li>
+    <li><code>name</code>: String (Farmer full name)</li>
+    <li><code>role</code>: Enum <code>['farmer', 'admin']</code> (default: <code>'farmer'</code>)</li>
+    <li><code>language</code>: Enum <code>['te', 'en']</code> (default: <code>'te'</code>)</li>
+    <li><code>storageCostPerQuintalPerDay</code>: Number (default: 2.0 INR)</li>
+    <li><code>isActive</code>: Boolean (default: <code>true</code>)</li>
+  </ul>
+
+  <h3>2. Plot Collection (<code>plots</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId (Primary Key)</li>
+    <li><code>userId</code>: ObjectId &rarr; <code>User._id</code> (Required, Indexed)</li>
+    <li><code>clientId</code>: String (UUIDv4 generated by offline PWA client)</li>
+    <li><code>name</code>: String (e.g., "ఉత్తర చేను (North Field)")</li>
+    <li><code>areaAcres</code>: Number (&gt; 0)</li>
+    <li><code>soilType</code>: Enum <code>['red', 'black', 'sandy', 'loamy', 'clay']</code></li>
+    <li><code>village</code>, <code>district</code>: String</li>
+    <li><strong>Compound Partial Index:</strong> <code>{ userId: 1, clientId: 1 }</code> with <code>partialFilterExpression: { clientId: { $type: "string" } }</code> prevents duplicate offline plot insertion without triggering null collision errors.</li>
+  </ul>
+
+  <h3>3. Cycle Collection (<code>cycles</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId (Primary Key)</li>
+    <li><code>userId</code>: ObjectId &rarr; <code>User._id</code></li>
+    <li><code>plotId</code>: ObjectId &rarr; <code>Plot._id</code></li>
+    <li><code>clientId</code>: String (UUIDv4)</li>
+    <li><code>crop</code>: String (e.g., "వరి (Paddy)", "ప్రత్తి (Cotton)", "మొక్కజొన్న (Maize)")</li>
+    <li><code>season</code>: Enum <code>['Kharif', 'Rabi', 'Summer']</code></li>
+    <li><code>year</code>: Number (e.g., 2025, 2026)</li>
+    <li><code>sowingDate</code>: Date; <code>expectedHarvestDate</code>: Date</li>
+    <li><code>status</code>: Enum <code>['active', 'harvested', 'closed']</code> (default: <code>'active'</code>)</li>
+    <li><strong>Compound Partial Index:</strong> <code>{ userId: 1, clientId: 1 }</code></li>
+  </ul>
+
+  <h3>4. Expense Collection (<code>expenses</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId (Primary Key)</li>
+    <li><code>userId</code>: ObjectId &rarr; <code>User._id</code></li>
+    <li><code>cycleId</code>: ObjectId &rarr; <code>Cycle._id</code> (Indexed)</li>
+    <li><code>clientId</code>: String (UUIDv4)</li>
+    <li><code>category</code>: Enum <code>['seeds', 'fertilizer', 'pesticide', 'labour', 'irrigation', 'machinery', 'transport', 'other']</code></li>
+    <li><code>item</code>: String (e.g., "Urea 2 bags")</li>
+    <li><code>amount</code>: Number (&gt; 0, INR)</li>
+    <li><code>date</code>: Date (default: <code>now</code>)</li>
+    <li><code>source</code>: Enum <code>['voice', 'manual']</code> (default: <code>'manual'</code>)</li>
+    <li><strong>Compound Partial Index:</strong> <code>{ userId: 1, clientId: 1 }</code></li>
+  </ul>
+
+  <h3>5. Harvest Collection (<code>harvests</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId (Primary Key)</li>
+    <li><code>userId</code>: ObjectId &rarr; <code>User._id</code></li>
+    <li><code>cycleId</code>: ObjectId &rarr; <code>Cycle._id</code></li>
+    <li><code>clientId</code>: String (UUIDv4)</li>
+    <li><code>quantityQuintals</code>: Number (&gt; 0)</li>
+    <li><code>pricePerQuintal</code>: Number (&gt; 0, INR)</li>
+    <li><code>buyer</code>: String; <code>market</code>: String</li>
+    <li><code>date</code>: Date</li>
+    <li><strong>Compound Partial Index:</strong> <code>{ userId: 1, clientId: 1 }</code></li>
+  </ul>
+
+  <h3>6. Price Collection (<code>prices</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId (Primary Key)</li>
+    <li><code>commodity</code>: String (e.g., "Paddy", "Cotton", "Maize")</li>
+    <li><code>market</code>: String (e.g., "Warangal", "Khammam")</li>
+    <li><code>district</code>, <code>state</code>: String</li>
+    <li><code>date</code>: Date</li>
+    <li><code>minPrice</code>, <code>maxPrice</code>, <code>modalPrice</code>: Number (INR/Quintal)</li>
+    <li><strong>Unique Compound Index:</strong> <code>{ commodity: 1, market: 1, date: 1 }</code> ensures zero duplicate daily market entries during bulk ingestion.</li>
+  </ul>
+
+  <h3>7. Forecast Collection (<code>forecasts</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId; <code>commodity</code>, <code>market</code>: String</li>
+    <li><code>model</code>: String (e.g., "SARIMAX(1,1,1)", "ExponentialSmoothing-HoltWinters")</li>
+    <li><code>mape</code>: Number (Model validation error percentage)</li>
+    <li><code>generatedAt</code>: Date (Index with 24-hour TTL caching)</li>
+    <li><code>points</code>: Array of subdocuments: <code>[{ date: Date, predicted: Number, lower: Number, upper: Number }]</code></li>
+  </ul>
+
+  <h3>8. RefreshToken Collection (<code>refreshtokens</code>)</h3>
+  <ul>
+    <li><code>_id</code>: ObjectId; <code>userId</code>: ObjectId &rarr; <code>User._id</code></li>
+    <li><code>token</code>: String (Hashed cryptographic token)</li>
+    <li><code>expiresAt</code>: Date (TTL Index set to 7 days for automatic cleanup)</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 7 ==================== -->
+  <h1>7. Backend Architecture: REST API Catalog &amp; Security</h1>
+
+  <h2>7.1 Complete API Endpoint Catalog</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 8%;">Method</th>
+        <th style="width: 27%;">Route URL</th>
+        <th style="width: 15%;">Auth / Guard</th>
+        <th style="width: 50%;">Purpose, Parameters &amp; Response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/auth/register</code></td>
+        <td>Public</td>
+        <td>Registers new farmer. Body: <code>{ name, phone, password, language }</code>. Returns user object, access token, sets HTTP-only refresh cookie.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/auth/login</code></td>
+        <td>Public</td>
+        <td>Authenticates farmer. Body: <code>{ phone, password }</code>. Returns <code>{ accessToken, user }</code>. Sets secure refresh cookie.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/auth/refresh</code></td>
+        <td>Cookie Auth</td>
+        <td>Rotates refresh token and issues fresh 15-minute access token.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/auth/logout</code></td>
+        <td>Auth Required</td>
+        <td>Invalidates refresh token in DB and clears client cookie.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/auth/me</code></td>
+        <td>Auth Required</td>
+        <td>Returns active user profile and storage cost preference.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/plots</code></td>
+        <td>Auth Required</td>
+        <td>Lists all farmland plots belonging to the authenticated user.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/plots</code></td>
+        <td>Auth Required</td>
+        <td>Creates plot. Body: <code>{ name, areaAcres, soilType, village, district, clientId }</code>.</td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td><code>/api/plots/:id</code></td>
+        <td>Auth Required</td>
+        <td>Deletes plot. Rejects with 400 if plot has active crop cycles.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/cycles</code></td>
+        <td>Auth Required</td>
+        <td>Lists user's crop cycles populated with parent plot metadata.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/cycles</code></td>
+        <td>Auth Required</td>
+        <td>Creates new crop cycle. Body: <code>{ plotId, crop, season, year, sowingDate }</code>.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/cycles/:id</code></td>
+        <td>Auth Required</td>
+        <td>Returns cycle details, all nested expenses, harvests, and profit metrics.</td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td><code>/api/cycles/:id</code></td>
+        <td>Auth Required</td>
+        <td>Deletes cycle and cascades deletion to linked expenses and harvests.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/expenses</code></td>
+        <td>Auth Required</td>
+        <td>Lists expenses with optional filters: <code>?cycleId=...&category=...</code>.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/expenses</code></td>
+        <td>Auth Required</td>
+        <td>Creates expense. Body: <code>{ cycleId, category, item, amount, date, source }</code>.</td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td><code>/api/expenses/:id</code></td>
+        <td>Auth Required</td>
+        <td>Deletes specified expense record.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/harvests</code></td>
+        <td>Auth Required</td>
+        <td>Records yield sale. Body: <code>{ cycleId, quantityQuintals, pricePerQuintal, date, closeCycle }</code>.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/analytics/summary</code></td>
+        <td>Auth Required</td>
+        <td>Executes aggregation returning Total Expense, Revenue, Net Profit, and Profit/Acre.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/analytics/cycle/:id</code></td>
+        <td>Auth Required</td>
+        <td>Returns category breakdown and financial breakdown for single cycle.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/analytics/expense-breakdown</code></td>
+        <td>Auth Required</td>
+        <td>Groups user expenditures by category, sorted descending by total amount.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/analytics/season-comparison</code></td>
+        <td>Auth Required</td>
+        <td>Compares revenue, expenses, and net profit per crop across seasons.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/prices/meta</code></td>
+        <td>Public</td>
+        <td>Returns distinct available commodities (Paddy, Cotton, Maize) and markets.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/prices</code></td>
+        <td>Public</td>
+        <td>Fetches historical daily prices: <code>?commodity=Paddy&market=Warangal&limit=60</code>.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/prices/forecast</code></td>
+        <td>Auth Required</td>
+        <td>Fetches 14-day price prediction points, MAPE, and confidence intervals.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/prices/advisor</code></td>
+        <td>Auth Required</td>
+        <td>Calculates Sell-Time decision: <code>?commodity=...&market=...&quantity=50&storageCost=2</code>.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/reports/cycle/:id/pdf</code></td>
+        <td>Auth Required</td>
+        <td>Generates and streams downloadable PDF crop cycle report.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/sync/pull</code></td>
+        <td>Auth Required</td>
+        <td>Bidirectional sync endpoint. Ingests outbox batch and returns delta changes.</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/admin/stats</code></td>
+        <td>Admin Only</td>
+        <td>Returns platform analytics: Total Farmers, Total Plots, Cycles, Total Logged Spend.</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/admin/prices/upload</code></td>
+        <td>Admin Only</td>
+        <td>Accepts multipart CSV upload and executes high-speed bulk upsert.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>7.2 Security &amp; Middleware Implementation</h2>
+  <ul>
+    <li><strong>Dual-Token Authentication Flow:</strong> Access tokens (JWT signed with HMAC-SHA256) expire in 15 minutes. Refresh tokens are stored in an <code>httpOnly</code>, <code>SameSite=Lax</code> cookie and stored in MongoDB. Refresh requests rotate the token, preventing replay attacks.</li>
+    <li><strong>Rate Limiting (<code>express-rate-limit</code>):</strong> Configured on <code>/api</code> with high headroom in development and loopback exemption (<code>127.0.0.1</code>), while enforcing 2,000 requests per 15 minutes in production and 50 attempts per 15 minutes on <code>/api/auth/login</code> to prevent credential stuffing.</li>
+    <li><strong>NoSQL Injection Defense (<code>express-mongo-sanitize</code>):</strong> Strips dollar signs (<code>$</code>) and dots (<code>.</code>) from request bodies and query parameters, neutralizing MongoDB operator injection.</li>
+    <li><strong>HTTP Security Headers (<code>helmet</code>):</strong> Injects standard security headers (Content Security Policy, X-Content-Type-Options, Strict-Transport-Security, Frameguard).</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 8 ==================== -->
+  <h1>8. MongoDB Aggregation Analytics Pipelines</h1>
+  <p>Rather than loading thousands of raw records into Node.js memory and computing totals in JavaScript, AgriVox executes computation directly inside MongoDB's C++ aggregation engine. Below are the key pipelines implemented in <code>server/src/controllers/analyticsController.js</code>.</p>
+
+  <h2>8.1 Overall Farm Summary Pipeline (<code>getSummary</code>)</h2>
+  <pre><code>const cyclesAgg = await Cycle.aggregate([
+  // Stage 1: Isolate current farmer's cycles
+  { $match: { userId } },
+
+  // Stage 2: Join parent plot to retrieve acreage
+  {
+    $lookup: {
+      from: 'plots',
+      localField: 'plotId',
+      foreignField: '_id',
+      as: 'plot',
+    },
+  },
+  { $unwind: { path: '$plot', preserveNullAndEmptyArrays: true } },
+
+  // Stage 3: Join all expenses linked to each cycle
+  {
+    $lookup: {
+      from: 'expenses',
+      localField: '_id',
+      foreignField: 'cycleId',
+      as: 'expenses',
+    },
+  },
+
+  // Stage 4: Join all harvest sales linked to each cycle
+  {
+    $lookup: {
+      from: 'harvests',
+      localField: '_id',
+      foreignField: 'cycleId',
+      as: 'harvests',
+    },
+  },
+
+  // Stage 5: Project cycle totals
+  {
+    $project: {
+      plotArea: { $ifNull: ['$plot.areaAcres', 1] },
+      cycleExpense: { $sum: '$expenses.amount' },
+      cycleRevenue: {
+        $sum: {
+          $map: {
+            input: '$harvests',
+            as: 'h',
+            in: { $multiply: ['$$h.quantityQuintals', '$$h.pricePerQuintal'] },
+          },
+        },
+      },
+    },
+  },
+
+  // Stage 6: Roll up all cycles across the farm into final KPIs
+  {
+    $group: {
+      _id: null,
+      totalExpense: { $sum: '$cycleExpense' },
+      totalRevenue: { $sum: '$cycleRevenue' },
+      totalArea: { $sum: '$plotArea' },
+      count: { $sum: 1 },
+    },
+  },
+]);</code></pre>
+
+  <h2>8.2 Categorical Expense Breakdown Pipeline (<code>getExpenseBreakdown</code>)</h2>
+  <pre><code>const breakdown = await Expense.aggregate([
+  // Stage 1: Filter by authenticated user (and optional cycleId)
+  { $match: match },
+
+  // Stage 2: Group by agricultural category and compute total amount
+  {
+    $group: {
+      _id: '$category',
+      total: { $sum: '$amount' },
+    },
+  },
+
+  // Stage 3: Shape output and round currency to 2 decimal places
+  {
+    $project: {
+      _id: 0,
+      category: '$_id',
+      total: { $round: ['$total', 2] },
+    },
+  },
+
+  // Stage 4: Sort descending so largest expenditure categories appear first
+  { $sort: { total: -1 } },
+]);</code></pre>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 9 ==================== -->
+  <h1>9. Frontend Architecture: Pages, Components &amp; i18n</h1>
+
+  <h2>9.1 Visual Verification &amp; User Interface Proof</h2>
+  <div class="screenshot-grid">
+    <div class="screenshot-item">
+      <img src="img/dashboard_en.png" alt="English Dashboard" />
+      <div class="screenshot-caption">Figure 9.1: Dashboard (English Mode) &ndash; Net Profit &amp; KPIs</div>
+    </div>
+    <div class="screenshot-item">
+      <img src="img/dashboard_te.png" alt="Telugu Dashboard" />
+      <div class="screenshot-caption">Figure 9.2: Dashboard (Telugu Mode) &ndash; Full Telugu UI</div>
+    </div>
+  </div>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-item">
+      <img src="img/prices_forecast.png" alt="Mandi Prices & Advisor" />
+      <div class="screenshot-caption">Figure 9.3: Mandi Prices, 14-Day Forecast &amp; Selling Advisor</div>
+    </div>
+    <div class="screenshot-item">
+      <img src="img/add_expense.png" alt="Expense Entry" />
+      <div class="screenshot-caption">Figure 9.4: Expense Entry &ndash; Voice &amp; Manual Forms</div>
+    </div>
+  </div>
+
+  <h2>9.2 State Management &amp; Application Lifecycle</h2>
+  <ul>
+    <li><strong><code>AuthContext</code>:</strong> Manages current user state, token persistence, and login/logout handlers. Automatically checks session on startup via <code>/api/auth/me</code>.</li>
+    <li><strong><code>SyncContext</code>:</strong> Subscribes to <code>SyncEngine</code>. Exposes <code>isOnline</code>, <code>isSyncing</code>, and <code>pendingCount</code> state variables globally so any component can display sync badges.</li>
+    <li><strong>Bilingual Formatting Utility (<code>formatBilingualText</code>):</strong> Detects dual-script strings formatted as <code>'Telugu (English)'</code> and strips out the non-active language. Features an agricultural dictionary mapping common terms (e.g., <em>Paddy &harr; వరి</em>, <em>Warangal &harr; వరంగల్</em>, <em>Kharif &harr; ఖరీఫ్</em>).</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 10 ==================== -->
+  <h1>10. Voice Entry Pipeline &amp; NLP Parsing Logic</h1>
+  <p>The voice input system (<code>client/src/utils/voiceParser.js</code>) is designed to handle noisy field environments and mixed Telugu-English phrasing without requiring external third-party cloud APIs.</p>
+
+  <div class="diagram-container">
+    <svg width="680" height="110" viewBox="0 0 680 110" xmlns="http://www.w3.org/2000/svg">
+      <rect width="680" height="110" fill="#fdfbf7" rx="6" />
+
+      <!-- Step 1 -->
+      <rect x="15" y="20" width="115" height="70" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <text x="72" y="42" font-family="sans-serif" font-size="9" font-weight="bold" fill="#1e4d2f" text-anchor="middle">1. Web Speech API</text>
+      <text x="72" y="58" font-family="sans-serif" font-size="8" fill="#555" text-anchor="middle">Mic Audio &rarr; Text</text>
+      <text x="72" y="72" font-family="sans-serif" font-size="7.5" fill="#777" text-anchor="middle">(te-IN / en-IN)</text>
+
+      <!-- Arrow -->
+      <line x1="130" y1="55" x2="148" y2="55" stroke="#1e4d2f" stroke-width="1.5" />
+
+      <!-- Step 2 -->
+      <rect x="150" y="20" width="115" height="70" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <text x="207" y="42" font-family="sans-serif" font-size="9" font-weight="bold" fill="#1e4d2f" text-anchor="middle">2. Amount Parsing</text>
+      <text x="207" y="58" font-family="sans-serif" font-size="8" fill="#555" text-anchor="middle">Digits or Telugu Words</text>
+      <text x="207" y="72" font-family="sans-serif" font-size="7.5" fill="#777" text-anchor="middle">"రెండు వేలు" &rarr; 2000</text>
+
+      <!-- Arrow -->
+      <line x1="265" y1="55" x2="283" y2="55" stroke="#1e4d2f" stroke-width="1.5" />
+
+      <!-- Step 3 -->
+      <rect x="285" y="20" width="115" height="70" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <text x="342" y="42" font-family="sans-serif" font-size="9" font-weight="bold" fill="#1e4d2f" text-anchor="middle">3. Category Match</text>
+      <text x="342" y="58" font-family="sans-serif" font-size="8" fill="#555" text-anchor="middle">Agri-Keywords Table</text>
+      <text x="342" y="72" font-family="sans-serif" font-size="7.5" fill="#777" text-anchor="middle">"urea" &rarr; fertilizer</text>
+
+      <!-- Arrow -->
+      <line x1="400" y1="55" x2="418" y2="55" stroke="#1e4d2f" stroke-width="1.5" />
+
+      <!-- Step 4 -->
+      <rect x="420" y="20" width="115" height="70" fill="#ffffff" stroke="#1e4d2f" stroke-width="1.5" rx="4" />
+      <text x="477" y="42" font-family="sans-serif" font-size="9" font-weight="bold" fill="#1e4d2f" text-anchor="middle">4. Item Extraction</text>
+      <text x="477" y="58" font-family="sans-serif" font-size="8" fill="#555" text-anchor="middle">Strip Currency/Stop</text>
+      <text x="477" y="72" font-family="sans-serif" font-size="7.5" fill="#777" text-anchor="middle">Remainder = Item</text>
+
+      <!-- Arrow -->
+      <line x1="535" y1="55" x2="553" y2="55" stroke="#1e4d2f" stroke-width="1.5" />
+
+      <!-- Step 5 -->
+      <rect x="555" y="20" width="110" height="70" fill="#ffffff" stroke="#2b7847" stroke-width="1.5" rx="4" />
+      <text x="610" y="42" font-family="sans-serif" font-size="9" font-weight="bold" fill="#2b7847" text-anchor="middle">5. Confirm Card</text>
+      <text x="610" y="58" font-family="sans-serif" font-size="8" fill="#555" text-anchor="middle">Editable Modal</text>
+      <text x="610" y="72" font-family="sans-serif" font-size="7.5" fill="#777" text-anchor="middle">Farmer Tap &rarr; Save</text>
+    </svg>
+    <div class="diagram-title">Figure 10.1: Voice-to-Expense Processing Pipeline</div>
+  </div>
+
+  <h2>10.1 Walkthrough of 10 Mandatory Test Sentences</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 5%;">#</th>
+        <th style="width: 32%;">Input Spoken Sentence</th>
+        <th style="width: 10%;">Language</th>
+        <th style="width: 18%;">Parsed Category</th>
+        <th style="width: 12%;">Parsed Amount</th>
+        <th style="width: 23%;">Extracted Item Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><code>"bought urea 2000 rupees"</code></td>
+        <td>en-IN</td>
+        <td><code>fertilizer</code></td>
+        <td>₹ 2,000</td>
+        <td><code>"urea"</code></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><code>"paid labour 1500"</code></td>
+        <td>en-IN</td>
+        <td><code>labour</code></td>
+        <td>₹ 1,500</td>
+        <td><code>"labour"</code></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><code>"seeds 3500 rupees"</code></td>
+        <td>en-IN</td>
+        <td><code>seeds</code></td>
+        <td>₹ 3,500</td>
+        <td><code>"seeds"</code></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><code>"యూరియా రెండు వేలు"</code></td>
+        <td>te-IN</td>
+        <td><code>fertilizer</code></td>
+        <td>₹ 2,000</td>
+        <td><code>"యూరియా"</code></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><code>"కూలీ 1500 రూపాయలు"</code></td>
+        <td>te-IN</td>
+        <td><code>labour</code></td>
+        <td>₹ 1,500</td>
+        <td><code>"కూలీ"</code></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><code>"diesel for motor 800"</code></td>
+        <td>en-IN</td>
+        <td><code>irrigation</code></td>
+        <td>₹ 800</td>
+        <td><code>"diesel for motor"</code></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><code>"pesticide spray two thousand"</code></td>
+        <td>en-IN</td>
+        <td><code>pesticide</code></td>
+        <td>₹ 2,000</td>
+        <td><code>"pesticide spray"</code></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><code>"tractor 1200"</code></td>
+        <td>en-IN</td>
+        <td><code>machinery</code></td>
+        <td>₹ 1,200</td>
+        <td><code>"tractor"</code></td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><code>"transport 600 rupees"</code></td>
+        <td>en-IN</td>
+        <td><code>transport</code></td>
+        <td>₹ 600</td>
+        <td><code>"transport"</code></td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><code>"ఎరువు 2500"</code></td>
+        <td>te-IN</td>
+        <td><code>fertilizer</code></td>
+        <td>₹ 2,500</td>
+        <td><code>"ఎరువు"</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 11 ==================== -->
+  <h1>11. Offline-First Architecture &amp; Synchronization</h1>
+
+  <h2>11.1 Offline Architecture Components</h2>
+  <ul>
+    <li><strong>PWA Service Worker:</strong> Generated via <code>vite-plugin-pwa</code>. Precaches core assets (HTML, CSS, JS, SVG, web fonts). Intercepts network fetches and serves cached resources when offline.</li>
+    <li><strong>Client Storage (IndexedDB):</strong> Dexie stores <code>plots</code>, <code>cycles</code>, <code>expenses</code>, <code>harvests</code>, and <code>outbox</code>. Writes complete locally without blocking for network responses.</li>
+    <li><strong>Outbox Queue &amp; Idempotency:</strong> Every local write creates an outbox entry: <code>{ entity, op, clientId, payload, createdAt, attempts, status }</code>. The <code>clientId</code> is a UUIDv4 assigned at creation.</li>
+    <li><strong>Conflict Handling &amp; Duplicate Prevention:</strong>
+      <ul>
+        <li>On reconnect, the client pushes outbox records to <code>/api/sync/pull</code>.</li>
+        <li>The server performs <code>findOneAndUpdate</code> matching on <code>{ userId, clientId }</code> with <code>upsert: true</code>.</li>
+        <li>If an entry was already synced previously, the server updates the existing document instead of inserting a duplicate.</li>
+        <li><strong>MongoDB Partial Filter Index:</strong> <code>{ userId: 1, clientId: 1 }</code> uses <code>partialFilterExpression: { clientId: { $type: "string" } }</code>, avoiding MongoDB duplicate key errors on legacy null entries.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 12 ==================== -->
+  <h1>12. Machine Learning Forecasting &amp; Selling Advisor</h1>
+
+  <h2>12.1 Price Dataset &amp; Model Selection</h2>
+  <p>The time-series dataset (<code>data/prices_seed.csv</code>) contains 6,024 daily modal price observations from Warangal and Khammam APMC Mandis across Paddy, Cotton, and Maize spanning 2020 through 2026. The ML service evaluates two candidate algorithms against a holdout window:</p>
+  <ul>
+    <li><strong>Candidate 1: SARIMAX(1,1,1)(1,0,1,7):</strong> Captures seasonality and weekly mandi trading volume cycles.</li>
+    <li><strong>Candidate 2: Holt-Winters Exponential Smoothing:</strong> Employs additive trend and damped extrapolation.</li>
+    <li><strong>Fallback: 7-Day Moving Average:</strong> Activated if series length &lt; 30 points or numerical convergence fails.</li>
+  </ul>
+
+  <h2>12.2 Model Evaluation Metric (MAPE)</h2>
+  <div class="formula-box">
+    $$	ext{MAPE} = rac{100%}{n} sum_{t=1}^{n} left| rac{	ext{Actual}_t - 	ext{Predicted}_t}{	ext{Actual}_t} ight|$$
+  </div>
+  <p>Historical models achieve an average MAPE of <strong>4.8% &ndash; 7.2%</strong> across commodities, well within the target threshold of &le; 10%.</p>
+
+  <h2>12.3 Smart Selling Advisor Mathematical Formulation</h2>
+  <p>The advisor evaluates whether waiting $d$ days ($d in [1, 14]$) generates enough price appreciation to overcome warehouse holding costs:</p>
+  <div class="formula-box">
+    $$	ext{NetGain}(d) = 	ext{PredictedPrice}(d) - 	ext{CurrentPrice} - (	ext{StorageCostPerDay} 	imes d)$$
+  </div>
+  <p>The system computes $	ext{MaxNetGain} = max_{d in [1,14]} 	ext{NetGain}(d)$ and selects the optimal day $d^*$.</p>
+  <ul>
+    <li>If $	ext{MaxNetGain} &gt; 0.03 	imes 	ext{CurrentPrice}$ (3% hurdle rate):<br />
+      <strong>Recommendation:</strong> <code>WAIT</code> $d^*$ Days. Expected Extra Gain = $	ext{MaxNetGain} 	imes 	ext{Quantity}$.</li>
+    <li>Otherwise:<br />
+      <strong>Recommendation:</strong> <code>SELL_NOW</code>. Expected Extra Gain = ₹0.</li>
+  </ul>
+
+  <div class="callout callout-success">
+    <strong>Worked Numerical Example:</strong><br />
+    Current Paddy Price ($P_0$) = ₹ 2,250 / Quintal. Farmer Stock ($Q$) = 50 Quintals. Storage Cost ($C_s$) = ₹ 2.0 / Qtl / Day.<br />
+    &bull; Day 7 Forecast ($P_7$) = ₹ 2,380 / Qtl.<br />
+    &bull; 7-Day Storage Cost = $7 	imes ₹ 2.0 = ₹ 14.0$ / Qtl.<br />
+    &bull; Net Gain on Day 7 = $2,380 - 2,250 - 14.0 = ₹ 116.0$ / Qtl.<br />
+    &bull; 3% Hurdle Threshold = $0.03 	imes 2,250 = ₹ 67.50$ / Qtl.<br />
+    <strong>Decision:</strong> Since ₹ 116.0 &gt; ₹ 67.50, the Advisor recommends: <strong>"Wait 7 Days to Sell"</strong>.<br />
+    <strong>Projected Extra Net Profit:</strong> $50 	imes ₹ 116.0 =$ <strong>₹ 5,800 additional profit</strong>.
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 13 ==================== -->
+  <h1>13. Season Report PDF Generation &amp; Admin Panel</h1>
+
+  <h2>13.1 PDF Report Generation (<code>pdfReportService.js</code>)</h2>
+  <p>AgriVox includes an audit-ready PDF generation service built with <code>pdfkit</code>. Key features:</p>
+  <ul>
+    <li><strong>Bilingual Typography:</strong> Embeds <code>NotoSansTelugu-Regular.ttf</code> to render Telugu script alongside Latin characters without glyph corruption.</li>
+    <li><strong>Sanitized Content-Disposition:</strong> Crop names containing Unicode characters are converted to ASCII tokens in HTTP headers to prevent <code>ERR_INVALID_CHAR</code> browser download crashes.</li>
+    <li><strong>Document Structure:</strong> Includes official header banner, farmer metadata, land plot characteristics, complete tabular expense ledger, harvest sales records, and final net profit per acre KPIs.</li>
+  </ul>
+
+  <h2>13.2 Administrative Control Center (<code>/admin/*</code>)</h2>
+  <ul>
+    <li><strong>Farmer Management:</strong> View registered farmers, filter by phone or name, and toggle account activation status.</li>
+    <li><strong>Mandi Data Bulk Upload:</strong> Upload CSV files containing commodity pricing data. Processed via streaming batch upserts (<code>Price.bulkWrite</code>) to ingest 6,000+ rows in under 2 seconds.</li>
+    <li><strong>Model Retraining Trigger:</strong> Initiates asynchronous model retraining on the Flask ML service for selected commodity and market pairs.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 14 ==================== -->
+  <h1>14. UI/UX Design Decisions for Rural Farmers</h1>
+  <p>AgriVox was intentionally designed to feel like an intuitive tool crafted for rural agriculturalists rather than an overly complex corporate dashboard.</p>
+  <ul>
+    <li><strong>Tactile Earthy Color Palette:</strong> Deep agricultural green (<code>#1e4d2f</code>) represents healthy crop yields, warm cream (<code>#fdfbf7</code>) reduces glare under bright sunlight, and harvest amber (<code>#b45309</code>) highlights expenditures. Avoids generic neon gradients.</li>
+    <li><strong>Minimum 48px Touch Targets:</strong> Touch targets (buttons, inputs, selects) are sized at &ge; 48px to accommodate farmers with calloused fingers.</li>
+    <li><strong>Thumb-Zone 4-Tab Bottom Navigation:</strong> Core actions are accessible at the bottom of the screen: Home, Add (Voice/Manual), Reports, Prices.</li>
+    <li><strong>Audio Confirmation Chimes:</strong> Web Audio API synthesizes subtle frequency chords (880Hz / 1320Hz) upon mic activation and expense saving to provide auditory feedback without requiring screen reading.</li>
+    <li><strong>One Primary Action Per View:</strong> Eliminates cognitive overload by focusing each screen on a single task.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 15 ==================== -->
+  <h1>15. Automated Testing &amp; Verification Results</h1>
+  <p>The codebase includes comprehensive test suites across all three tiers, totaling <strong>36 automated test cases</strong>.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 20%;">Test Suite</th>
+        <th style="width: 25%;">Framework &amp; Runner</th>
+        <th style="width: 15%;">Tests Run</th>
+        <th style="width: 15%;">Status</th>
+        <th style="width: 25%;">Scope of Coverage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>Jest &amp; Supertest</td>
+        <td>19</td>
+        <td><strong style="color: #2b7847;">19 Passed</strong></td>
+        <td>Auth registration, JWT refresh cookies, role guards, plot validation, cycle profit cascading, expenses CRUD, sync pull idempotency.</td>
+      </tr>
+      <tr>
+        <td><strong>Client Logic</strong></td>
+        <td>Vitest &amp; fake-indexeddb</td>
+        <td>14</td>
+        <td><strong style="color: #2b7847;">14 Passed</strong></td>
+        <td>10 voice test sentences (Telugu &amp; English), i18n translation fallback, Dexie outbox queueing, offline-to-online sync engine.</td>
+      </tr>
+      <tr>
+        <td><strong>ML Forecasting</strong></td>
+        <td>Pytest</td>
+        <td>3</td>
+        <td><strong style="color: #2b7847;">3 Passed</strong></td>
+        <td>SARIMAX and Holt-Winters model fitting, 7-day moving average fallback, MAPE calculation &le; 10%.</td>
+      </tr>
+      <tr>
+        <td><strong>Total Automated</strong></td>
+        <td>Tri-Tier CI Suite</td>
+        <td><strong>36</strong></td>
+        <td><strong style="color: #2b7847;">100% PASS</strong></td>
+        <td>End-to-end coverage across client, server, and ML microservices.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 16 ==================== -->
+  <h1>16. Local Execution &amp; Containerized Deployment</h1>
+
+  <h2>16.1 Local Native Setup</h2>
+  <pre><code># 1. Clone repository
+git clone https://github.com/your-username/AgriVox.git
+cd AgriVox
+
+# 2. Start ML Forecasting Microservice (Python)
+cd ml-service
+python -m venv .venv
+# Windows: .venv\Scripts\activate | Linux/macOS: source .venv/bin/activate
+pip install -r requirements.txt
+python app.py # Listens on http://localhost:8000
+
+# 3. Start Backend Server (Node.js)
+cd ../server
+npm install
+npm run seed  # Populates demo farmer, plots, cycles, 20 expenses, 6000+ prices
+npm run dev   # Listens on http://localhost:5000
+
+# 4. Start Client PWA (React + Vite)
+cd ../client
+npm install
+npm run dev   # Listens on http://localhost:3000</code></pre>
+
+  <h2>16.2 Containerized Docker Deployment</h2>
+  <pre><code># Orchestrate all services in isolated containers
+docker-compose up --build -d
+
+# Verify running container health
+docker-compose ps
+# Web Client:   http://localhost:3000 (Nginx)
+# Backend API:  http://localhost:5000 (Node.js)
+# ML Service:   http://localhost:8000 (Flask / Gunicorn)
+# Database:     mongodb://localhost:27017</code></pre>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 17 ==================== -->
+  <h1>17. Technical Challenges Encountered &amp; Resolutions</h1>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Challenge Encountered</th>
+        <th style="width: 35%;">Root Cause Analysis</th>
+        <th style="width: 40%;">Implemented Engineering Resolution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>MongoDB Null Index Collisions (<code>E11000</code>)</strong></td>
+        <td>Compound sparse index on <code>(userId, clientId)</code> threw duplicate key errors when multiple records lacked a <code>clientId</code>.</td>
+        <td>Migrated from <code>{ sparse: true }</code> to <code>{ partialFilterExpression: { clientId: { $type: 'string' } } }</code> across all models.</td>
+      </tr>
+      <tr>
+        <td><strong>Slow CSV Mandi Price Ingestion</strong></td>
+        <td>Row-by-row <code>findOneAndUpdate</code> queries for 6,000+ records caused write lock contention, taking minutes to seed.</td>
+        <td>Replaced with unordered batch upserts using <code>Price.bulkWrite(operations, { ordered: false })</code>, reducing ingestion time to &lt; 2 seconds.</td>
+      </tr>
+      <tr>
+        <td><strong>PDF Download Header Encoding (<code>ERR_INVALID_CHAR</code>)</strong></td>
+        <td>Setting crop names containing Telugu Unicode in the HTTP <code>Content-Disposition</code> header violated RFC 7230 character restrictions.</td>
+        <td>Sanitized the filename using regex replacement (<code>replace(/[^a-zA-Z0-9_-]/g, '_')</code>) while preserving full Telugu script in the PDF body.</td>
+      </tr>
+      <tr>
+        <td><strong>API Rate Limiting Starvation</strong></td>
+        <td>The 200 req / 15 min rate limiter was exhausted during rapid UI slider interactions and automated test runs.</td>
+        <td>Added loopback/development IP exemptions, increased limits (10,000 in dev, 2,000 in prod), and debounced slider requests by 250ms on the client.</td>
+      </tr>
+      <tr>
+        <td><strong>Mixed Telugu/English UI Display</strong></td>
+        <td>Seeded database fields stored bilingual strings (e.g. <code>'వరి (Paddy)'</code>), causing mixed text regardless of selected language.</td>
+        <td>Built <code>formatBilingualText(text, lang)</code> with regex pattern matching and an agricultural dictionary to extract only the active language.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 18 ==================== -->
+  <h1>18. Limitations &amp; Future Scope</h1>
+
+  <h2>18.1 Current Limitations (v1.0)</h2>
+  <ul>
+    <li><strong>Browser Speech Engine Dependency:</strong> Web Speech API accuracy depends on the underlying browser and operating system speech services.</li>
+    <li><strong>Manual Mandi Data Ingestion:</strong> Mandi prices are updated via admin CSV uploads or scheduled nightly Agmarknet scraping, rather than real-time sub-minute streaming.</li>
+    <li><strong>Single-Farm Aggregations:</strong> Profit figures reflect individual farmers rather than cooperative pooling across farmer producer organizations (FPOs).</li>
+  </ul>
+
+  <h2>18.2 Future Development Roadmap</h2>
+  <ul>
+    <li><strong>Interactive Voice Response (IVR) &amp; SMS:</strong> Enable voice entry over standard feature phone calls for farmers without smartphones.</li>
+    <li><strong>Edge ML on Device (TensorFlow.js / WebAssembly):</strong> Run lightweight ARIMA or neural forecasting directly inside the browser sandbox.</li>
+    <li><strong>Satellite Crop Health Monitoring:</strong> Integrate Sentinel-2 multispectral imagery (NDVI index) for automated crop growth verification.</li>
+    <li><strong>WhatsApp Conversational Bot:</strong> Allow farmers to send voice notes via WhatsApp and receive instant ledger updates.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 19 ==================== -->
+  <h1>19. Examiner Viva Voce Preparation Guide (26 In-Depth Q&amp;As)</h1>
+
+  <div class="avoid-break">
+    <h3>Q1: What is the core problem AgriVox solves that existing agri-apps do not?</h3>
+    <p><strong>Answer:</strong> Existing agri-apps require heavy alphanumeric typing, complex menus, and active internet connectivity. AgriVox enables voice-first bookkeeping under 10 seconds in native Telugu/English, operates fully offline with IndexedDB outbox syncing, and couples cost accounting with statistical price forecasting to advise farmers on optimal selling times.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q2: Why did you choose a Progressive Web App (PWA) over a native Android application?</h3>
+    <p><strong>Answer:</strong> Smallholder farmers often have entry-level smartphones with limited storage. PWAs install instantly from the web browser without Google Play Store friction, require &lt; 5MB storage, update automatically via service workers, and share a single codebase across Android, iOS, and desktop browsers.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q3: How does the offline sync engine prevent duplicate records when reconnecting?</h3>
+    <p><strong>Answer:</strong> The client assigns a unique UUIDv4 <code>clientId</code> to every record when created offline. On reconnect, the server performs an upsert matching on <code>{ userId, clientId }</code>. If the record already exists, it is updated rather than inserted again. MongoDB partial filter indexes enforce uniqueness on client IDs.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q4: Explain the difference between access tokens and refresh tokens in AgriVox.</h3>
+    <p><strong>Answer:</strong> Access tokens are short-lived (15 minutes) JWTs sent in the HTTP <code>Authorization</code> header to authorize API calls. Refresh tokens are long-lived (7 days) cryptographic tokens stored in an <code>httpOnly</code>, <code>SameSite=Lax</code> cookie and saved in the database. When access tokens expire, the refresh endpoint verifies the cookie, rotates the token in the database, and issues a new access token without requiring the user to re-enter credentials.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q5: How does the voice parser convert spoken sentences into structured expenses?</h3>
+    <p><strong>Answer:</strong> <code>voiceParser.js</code> takes raw transcript text from the Web Speech API and executes a four-step pipeline: (1) extracts numbers from digits or Telugu/English number words; (2) matches words against an agricultural keyword dictionary across 8 categories; (3) strips matched amounts and currency terms to isolate the item description; and (4) presents an editable confirmation card before saving.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q6: Why did you use MongoDB instead of a relational database like PostgreSQL?</h3>
+    <p><strong>Answer:</strong> Agricultural bookkeeping involves semi-structured, evolving attributes across crop cycles, varied expense items, and time-series prices. MongoDB handles polymorphic expense schemas, provides native JSON serialization for offline sync, and offers a multi-stage aggregation pipeline that computes farm financials directly within the database engine.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q7: What is the mathematical formula used by the Smart Selling Advisor?</h3>
+    <p><strong>Answer:</strong> For each future day $d in [1, 14]$, it calculates: $	ext{NetGain}(d) = 	ext{PredictedPrice}(d) - 	ext{CurrentPrice} - (	ext{StorageCostPerDay} 	imes d)$. If the maximum net gain across the 14 days exceeds a 3% hurdle rate ($0.03 	imes 	ext{CurrentPrice}$), the system recommends waiting $d^*$ days; otherwise, it recommends selling immediately.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q8: What forecasting models are implemented in the ML service?</h3>
+    <p><strong>Answer:</strong> The Flask microservice trains both a SARIMAX(1,1,1) model and an additive Holt-Winters Exponential Smoothing model on historical mandi prices, evaluating them on a holdout set to pick the lowest MAPE. If historical data is under 30 days or numerical convergence fails, it falls back to a 7-day Moving Average with trend extrapolation.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q9: What is MAPE and why is it preferred over RMSE for mandi prices?</h3>
+    <p><strong>Answer:</strong> Mean Absolute Percentage Error (MAPE) expresses forecast errors as an intuitive percentage relative to actual values. Unlike RMSE, which is scale-dependent and produces larger absolute errors for high-value crops (e.g. Cotton at ₹7,000/Qtl) versus lower-value crops (e.g. Maize at ₹2,000/Qtl), MAPE provides a standardized accuracy metric across all commodities.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q10: How did you solve the MongoDB E11000 duplicate key error on compound sparse indexes?</h3>
+    <p><strong>Answer:</strong> Compound sparse indexes in MongoDB only skip index entries if <em>all</em> indexed fields are absent. If <code>userId</code> was present but <code>clientId</code> was null, the null value was indexed, causing duplicate key conflicts. We replaced <code>sparse: true</code> with a partial filter index: <code>partialFilterExpression: { clientId: { $type: "string" } }</code>, which only indexes documents with a valid string client ID.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q11: Why is the ML forecasting implemented as a separate microservice?</h3>
+    <p><strong>Answer:</strong> Decoupling the Python statsmodels service (Flask on port 8000) from the Express API (Node.js on port 5000) prevents computationally intensive time-series model fitting from blocking the Node.js event loop. It also allows scaling the ML service independently.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q12: How does AgriVox ensure full Telugu localization without font rendering issues?</h3>
+    <p><strong>Answer:</strong> The frontend uses <code>i18next</code> with structured JSON dictionaries and a bilingual formatter (<code>formatBilingualText</code>). For server-side PDF generation, PDFKit embeds the TrueType font <code>NotoSansTelugu-Regular.ttf</code> to correctly render complex Telugu conjunct glyphs without corruption.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q13: What security measures prevent MongoDB injection in the Express server?</h3>
+    <p><strong>Answer:</strong> We use <code>express-mongo-sanitize</code> to strip dollar signs (<code>$</code>) and dots (<code>.</code>) from request bodies, preventing operator injection. Additionally, Mongoose schemas enforce strict data typing and schema validation.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q14: How does the application handle rate limiting during development and production?</h3>
+    <p><strong>Answer:</strong> <code>express-rate-limit</code> applies a general limiter on <code>/api</code> and a strict limiter on <code>/api/auth/login</code>. In development, loopback addresses (<code>127.0.0.1</code>, <code>::1</code>) are exempted to prevent developer lockout. On the frontend, slider inputs are debounced by 250ms to prevent rapid burst calls.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q15: What happens if a farmer tries to delete a plot that has active crop cycles?</h3>
+    <p><strong>Answer:</strong> The backend checks for active cycles using <code>Cycle.findOne({ plotId, status: 'active' })</code>. If found, the delete request is rejected with HTTP 400 and an error message, preserving agricultural audit trails.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q16: How are farm profits calculated per acre?</h3>
+    <p><strong>Answer:</strong> The aggregation pipeline computes: $	ext{NetProfit} = 	ext{TotalRevenue} - 	ext{TotalExpense}$. Total acreage is aggregated across plots ($sum 	ext{areaAcres}$). Profit per acre is calculated as: $	ext{ProfitPerAcre} = 	ext{NetProfit} / 	ext{TotalAcreage}$.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q17: How did you optimize bulk mandi price CSV uploads from minutes to under 2 seconds?</h3>
+    <p><strong>Answer:</strong> We replaced sequential <code>findOneAndUpdate</code> operations with unordered bulk upserts using <code>Price.bulkWrite(operations, { ordered: false })</code>. This sends batch write commands to MongoDB in parallel, drastically reducing network round-trips.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q18: What is the purpose of the <code>clientId</code> field across offline models?</h3>
+    <p><strong>Answer:</strong> <code>clientId</code> is a client-generated UUIDv4 assigned immediately when a record is created offline. It serves as an idempotent correlation key so that when the record is synced later, the server and client can match records without generating duplicates.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q19: How does the Web Speech API handle browser compatibility fallbacks?</h3>
+    <p><strong>Answer:</strong> <code>AddExpense.jsx</code> verifies if <code>window.SpeechRecognition || window.webkitSpeechRecognition</code> is defined. If unsupported, the voice recorder is gracefully hidden and the manual entry form is displayed as the default view.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q20: What are the primary touch target and accessibility constraints in AgriVox?</h3>
+    <p><strong>Answer:</strong> All interactive buttons and inputs have a minimum size of 48px &times; 48px to accommodate farmers with calloused hands. High-contrast earthy green (<code>#1e4d2f</code>) and warm cream (<code>#fdfbf7</code>) reduce glare in direct sunlight, and audio cues provide non-visual feedback.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q21: How does the server prevent orphaned records when a cycle is deleted?</h3>
+    <p><strong>Answer:</strong> When a cycle is deleted, the controller runs: <code>Promise.all([Expense.deleteMany({ cycleId }), Harvest.deleteMany({ cycleId })])</code> to cascade delete all associated expenses and harvest records.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q22: Why does the forecasting engine use a 24-hour cache for predictions?</h3>
+    <p><strong>Answer:</strong> Mandi trading rates update once per day following APMC market closing. Re-fitting time-series models on every page load would waste compute resources. Daily caching in the <code>Forecast</code> collection ensures fast responses while reflecting fresh daily prices.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q23: How does the frontend handle token expiration during active use?</h3>
+    <p><strong>Answer:</strong> Axios response interceptors in <code>api/client.js</code> catch HTTP 401 errors. The client calls <code>/api/auth/refresh</code> to exchange the refresh cookie for a new access token, updates the Authorization header, and retries the original request automatically.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q24: What is the purpose of the <code>source</code> field on Expense documents?</h3>
+    <p><strong>Answer:</strong> The <code>source</code> field records whether an expense was logged via <code>'voice'</code> or <code>'manual'</code> entry. This enables tracking voice adoption rates in admin analytics to measure feature utilization.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q25: How is Docker Compose configured for deployment?</h3>
+    <p><strong>Answer:</strong> <code>docker-compose.yml</code> coordinates four containers: <code>mongo</code> (database), <code>ml-service</code> (Flask on port 8000), <code>server</code> (Node.js on port 5000), and <code>client</code> (Nginx serving static PWA assets on port 3000), with health checks and restart policies configured for resilience.</p>
+  </div>
+
+  <div class="avoid-break">
+    <h3>Q26: What key lesson was learned from the bilingual text formatting issue?</h3>
+    <p><strong>Answer:</strong> Storing bilingual combined strings like <code>'వరి (Paddy)'</code> directly in database records causes display issues when users select a single language. A proper localization architecture must either store canonical keys with client-side translation or include a parsing utility (<code>formatBilingualText</code>) to dynamically extract the active language's text.</p>
+  </div>
+
+  <div style="margin-top: 35px; border-top: 2px solid #1e4d2f; padding-top: 15px; text-align: center; font-size: 8.5pt; color: #776a5b;">
+    &mdash; END OF TECHNICAL EXAMINATION REPORT &mdash;<br />
+    AgriVox Engineering Project &bull; Document Generated: October 2026 &bull; Certified Production-Ready
+  </div>
+
+</body>
+</html>
