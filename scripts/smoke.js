@@ -173,14 +173,17 @@ async function runSmokeTests() {
     logResult('5. Forecast & Advisor', false, err.message);
   }
 
-  // 6. Register Test Farmer
+  const testPhone2 = `998${Math.floor(1000000 + Math.random() * 9000000)}`;
+  let authToken2 = null;
+
+  // 6a. Register First Test Farmer (No Email)
   try {
     const regRes = await request('/auth/register', {
       method: 'POST',
       body: JSON.stringify({
         phone: testPhone,
         password: 'Password123!',
-        name: 'SmokeTest Farmer',
+        name: 'SmokeTest Farmer One',
         language: 'te',
       }),
     });
@@ -188,12 +191,59 @@ async function runSmokeTests() {
     if (regRes.status === 201 && regRes.body?.data?.accessToken) {
       authToken = regRes.body.data.accessToken;
       testUserId = regRes.body.data.user?.id || regRes.body.data.user?._id;
-      logResult('6. Register Test Farmer (/api/auth/register)', true, `Phone: ${testPhone}`);
+      logResult('6a. Register Farmer 1 without email (/api/auth/register)', true, `Phone: ${testPhone}`);
     } else {
-      logResult('6. Register Test Farmer (/api/auth/register)', false, `Status: ${regRes.status}`);
+      logResult('6a. Register Farmer 1 without email (/api/auth/register)', false, `Status: ${regRes.status}, Msg: ${regRes.body?.message}`);
     }
   } catch (err) {
-    logResult('6. Register Test Farmer (/api/auth/register)', false, err.message);
+    logResult('6a. Register Farmer 1 without email (/api/auth/register)', false, err.message);
+  }
+
+  // 6b. Register Second Test Farmer (Different Phone, No Email - Checks No Null Email Collision)
+  try {
+    const regRes2 = await request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone: testPhone2,
+        password: 'Password123!',
+        name: 'SmokeTest Farmer Two',
+        language: 'en',
+      }),
+    });
+
+    if (regRes2.status === 201 && regRes2.body?.data?.accessToken) {
+      authToken2 = regRes2.body.data.accessToken;
+      logResult('6b. Register Farmer 2 without email - No email_1 collision', true, `Phone: ${testPhone2}`);
+    } else {
+      logResult('6b. Register Farmer 2 without email - No email_1 collision', false, `Status: ${regRes2.status}, Msg: ${regRes2.body?.message}`);
+    }
+  } catch (err) {
+    logResult('6b. Register Farmer 2 without email - No email_1 collision', false, err.message);
+  }
+
+  // 6c. Register Duplicate Phone -> Must Return HTTP 409 with Phone Message & No Raw DB Wording
+  try {
+    const dupRes = await request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone: testPhone,
+        password: 'Password123!',
+        name: 'SmokeTest Duplicate Farmer',
+      }),
+    });
+
+    const is409 = dupRes.status === 409;
+    const msg = dupRes.body?.message || '';
+    const hasPhoneMsg = msg.toLowerCase().includes('mobile number is already registered') || msg.toLowerCase().includes('phone');
+    const noRawWording = !msg.toLowerCase().includes('record') && !msg.toLowerCase().includes('unique key') && !msg.toLowerCase().includes('e11000') && !msg.toLowerCase().includes('email');
+
+    logResult(
+      '6c. Duplicate Phone Returns 409 with Friendly Message',
+      is409 && hasPhoneMsg && noRawWording,
+      `Status: ${dupRes.status}, Msg: "${msg}"`
+    );
+  } catch (err) {
+    logResult('6c. Duplicate Phone Returns 409 with Friendly Message', false, err.message);
   }
 
   // 7. Login Test Farmer

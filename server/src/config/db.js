@@ -1,6 +1,34 @@
 import mongoose from 'mongoose';
+import User from '../models/User.js';
 
 let mongoMemoryServer = null;
+
+export const cleanStaleUserIndexes = async () => {
+  try {
+    const db = mongoose.connection.db;
+    if (!db) return;
+
+    const collections = await db.listCollections({ name: 'users' }).toArray();
+    if (collections.length === 0) return;
+
+    const userCollection = db.collection('users');
+    const indexes = await userCollection.indexes();
+
+    for (const idx of indexes) {
+      const isEmailIndex = idx.name === 'email_1' || (idx.key && idx.key.email);
+      const isStale = isEmailIndex && (!idx.partialFilterExpression || !idx.partialFilterExpression.email);
+      if (isStale) {
+        console.log(`[AgriVox] Safely dropping stale unique index '${idx.name}' on users collection...`);
+        await userCollection.dropIndex(idx.name);
+        console.log(`[AgriVox] Stale index '${idx.name}' dropped successfully.`);
+      }
+    }
+
+    await User.syncIndexes();
+  } catch (err) {
+    console.warn('[AgriVox] Stale user index check notice:', err.message);
+  }
+};
 
 export const connectDB = async (customUri = null) => {
   const uri = customUri || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/agrivox';
@@ -19,6 +47,7 @@ export const connectDB = async (customUri = null) => {
         serverSelectionTimeoutMS: 5000,
       });
       console.log(`[AgriVox] Successfully connected to MongoDB [database: ${dbName}] at: ${safeUri}`);
+      await cleanStaleUserIndexes();
       return;
     }
   } catch (err) {

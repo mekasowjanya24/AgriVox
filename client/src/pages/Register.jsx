@@ -15,28 +15,55 @@ export const Register = () => {
   const [language, setLanguage] = useState(i18n.language || 'te');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({ name: '', phone: '', password: '' });
+
+  const validateFields = () => {
+    const errs = { name: '', phone: '', password: '' };
+    let isValid = true;
+
+    if (!name.trim()) {
+      errs.name = t('auth.nameRequired');
+      isValid = false;
+    }
+
+    if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+      errs.phone = t('auth.phoneDigitsRequired');
+      isValid = false;
+    }
+
+    if (!password || password.length < 6) {
+      errs.password = t('auth.passwordLengthRequired');
+      isValid = false;
+    }
+
+    setFieldErrors(errs);
+    return isValid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!phone || phone.length !== 10) {
-      setError(i18n.language === 'te' ? 'మొబైల్ నంబర్ తప్పనిసరిగా 10 అంకెలు ఉండాలి' : 'Phone number must be exactly 10 digits');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError(i18n.language === 'te' ? 'పాస్‌వర్డ్ కనీసం 6 అక్షరాలు ఉండాలి' : 'Password must be at least 6 characters');
+    if (!validateFields()) {
       return;
     }
 
     setLoading(true);
     try {
-      await register({ name, phone, password, language, role: 'farmer' });
+      await register({ name: name.trim(), phone, password, language, role: 'farmer' });
       navigate('/');
     } catch (err) {
-      const msg = err.response?.data?.message || (i18n.language === 'te' ? 'నమోదు విఫలమైంది. మళ్ళీ ప్రయత్నించండి.' : 'Registration failed. Please try again.');
-      setError(msg);
+      const serverMsg = err.response?.data?.message || '';
+      const isDuplicate = err.response?.status === 409 || serverMsg.toLowerCase().includes('already') || serverMsg.toLowerCase().includes('duplicate');
+
+      let userMsg = '';
+      if (isDuplicate) {
+        userMsg = t('auth.phoneAlreadyRegistered');
+        setFieldErrors((prev) => ({ ...prev, phone: userMsg }));
+      } else {
+        userMsg = i18n.language === 'te' ? 'నమోదు విఫలమైంది. దయచేసి వివరాలను సరిచూసి మళ్ళీ ప్రయత్నించండి.' : 'Registration failed. Please check your details and try again.';
+      }
+      setError(userMsg);
     } finally {
       setLoading(false);
     }
@@ -68,52 +95,77 @@ export const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-earth-800 mb-1.5">
-                {t('auth.name')}
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-bold text-earth-800">
+                  {t('auth.name')}
+                </label>
+                {fieldErrors.name && (
+                  <span className="text-xs text-red-600 font-semibold">{fieldErrors.name}</span>
+                )}
+              </div>
               <div className="relative">
                 <User className="w-5 h-5 text-earth-400 absolute left-3.5 top-4" />
                 <input
                   type="text"
-                  className="input-farmer pl-11"
+                  className={`input-farmer pl-11 ${fieldErrors.name ? 'border-red-500' : ''}`}
                   placeholder={t('auth.namePlaceholder')}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: '' }));
+                  }}
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-earth-800 mb-1.5">
-                {t('auth.phone')}
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-bold text-earth-800">
+                  {t('auth.phone')}
+                </label>
+                {fieldErrors.phone && (
+                  <span className="text-xs text-red-600 font-semibold">{fieldErrors.phone}</span>
+                )}
+              </div>
               <div className="relative">
                 <Phone className="w-5 h-5 text-earth-400 absolute left-3.5 top-4" />
                 <input
                   type="tel"
                   maxLength={10}
-                  className="input-farmer pl-11"
+                  className={`input-farmer pl-11 ${fieldErrors.phone ? 'border-red-500' : ''}`}
                   placeholder={t('auth.phonePlaceholder')}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/\D/g, '');
+                    setPhone(cleaned);
+                    if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: '' }));
+                  }}
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-earth-800 mb-1.5">
-                {t('auth.password')}
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-bold text-earth-800">
+                  {t('auth.password')}
+                </label>
+                {fieldErrors.password && (
+                  <span className="text-xs text-red-600 font-semibold">{fieldErrors.password}</span>
+                )}
+              </div>
               <div className="relative">
                 <Lock className="w-5 h-5 text-earth-400 absolute left-3.5 top-4" />
                 <input
                   type="password"
-                  className="input-farmer pl-11"
+                  className={`input-farmer pl-11 ${fieldErrors.password ? 'border-red-500' : ''}`}
                   placeholder={t('auth.passwordPlaceholder')}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' }));
+                  }}
                   required
                 />
               </div>

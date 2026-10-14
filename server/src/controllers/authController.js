@@ -35,7 +35,8 @@ export const register = async (req, res, next) => {
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: 'A user with this phone number already exists',
+        message: 'This mobile number is already registered. Please log in.',
+        field: 'phone',
       });
     }
 

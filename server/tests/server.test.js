@@ -53,6 +53,53 @@ describe('1. Authentication & Role-Based Authorization', () => {
     expect(res.body.data.accessToken).toBeDefined();
   });
 
+  it('should allow two users with different phones and no email to both register successfully', async () => {
+    const res1 = await request(app)
+      .post('/api/auth/register')
+      .send({
+        name: 'Farmer One',
+        phone: '7770000001',
+        password: 'Password@123',
+      });
+    expect(res1.status).toBe(201);
+    expect(res1.body.success).toBe(true);
+
+    const res2 = await request(app)
+      .post('/api/auth/register')
+      .send({
+        name: 'Farmer Two',
+        phone: '7770000002',
+        password: 'Password@123',
+      });
+    expect(res2.status).toBe(201);
+    expect(res2.body.success).toBe(true);
+    expect(res2.body.data.user.phone).toBe('7770000002');
+
+    // Clean up
+    await User.deleteMany({ phone: { $in: ['7770000001', '7770000002'] } });
+  });
+
+  it('should return 409 with friendly phone message when registering the same phone number twice', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({
+        name: 'Duplicate Phone Farmer',
+        phone: '7777777777',
+        password: 'Password@123',
+      });
+
+    expect(res.status).toBe(409);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe('This mobile number is already registered. Please log in.');
+    expect(res.body.message).not.toMatch(/record|unique key|E11000|email/i);
+  });
+
+  it('should run stale index cleanup without errors idempotently', async () => {
+    const { cleanStaleUserIndexes } = await import('../src/config/db.js');
+    await expect(cleanStaleUserIndexes()).resolves.not.toThrow();
+    await expect(cleanStaleUserIndexes()).resolves.not.toThrow();
+  });
+
   it('FR-AUTH-01: should reject registration with invalid phone or short password', async () => {
     const res = await request(app)
       .post('/api/auth/register')

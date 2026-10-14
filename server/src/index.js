@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import app from './app.js';
-import { connectDB, disconnectDB } from './config/db.js';
+import { connectDB, disconnectDB, cleanStaleUserIndexes } from './config/db.js';
 import { startPriceSyncJob } from './jobs/priceSyncJob.js';
 
 import Price from './models/Price.js';
@@ -14,6 +14,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 const startServer = async () => {
   try {
     await connectDB();
+    await cleanStaleUserIndexes();
     startPriceSyncJob();
 
     // Auto-seed initial Mandi price data on cloud startup if database is newly provisioned

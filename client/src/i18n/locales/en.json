@@ -39,7 +39,11 @@
     "noAccount": "New farmer? Register here",
     "loginSuccess": "Logged in successfully!",
     "registerSuccess": "Account registered successfully!",
-    "logoutConfirm": "Are you sure you want to log out?"
+    "logoutConfirm": "Are you sure you want to log out?",
+    "nameRequired": "Full Name is required",
+    "phoneDigitsRequired": "Mobile number must be exactly 10 digits",
+    "passwordLengthRequired": "Password must be at least 6 characters",
+    "phoneAlreadyRegistered": "This mobile number is already registered. Please log in."
   },
   "dashboard": {
     "greeting": "Welcome, {{name}}!",

@@ -1,12 +1,32 @@
 export const errorHandler = (err, req, res, next) => {
   console.error('[Error]', err);
 
-  // Mongoose duplicate key error
+  // Mongoose duplicate key error (E11000)
   if (err.code === 11000) {
-    const fields = Object.keys(err.keyPattern || {}).join(', ');
+    const keyPattern = err.keyPattern || {};
+    const keyFields = Object.keys(keyPattern);
+
+    if (keyFields.includes('phone') || err.message?.includes('phone_1') || err.keyValue?.phone) {
+      return res.status(409).json({
+        success: false,
+        message: 'This mobile number is already registered. Please log in.',
+        field: 'phone',
+      });
+    }
+
+    if (keyFields.includes('email') || err.message?.includes('email_1') || err.keyValue?.email) {
+      return res.status(409).json({
+        success: false,
+        message: 'This email is already registered. Please log in.',
+        field: 'email',
+      });
+    }
+
+    const field = keyFields[0] || 'information';
     return res.status(409).json({
       success: false,
-      message: `A record with this ${fields || 'unique key'} already exists`,
+      message: `This ${field} is already registered. Please log in.`,
+      field,
     });
   }
 

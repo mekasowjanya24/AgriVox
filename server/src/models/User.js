@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\d{10}$/, 'Phone number must be exactly 10 digits'],
     },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: undefined,
+    },
     passwordHash: {
       type: String,
       required: true,
@@ -47,6 +53,11 @@ const userSchema = new mongoose.Schema(
       },
     },
   }
+);
+
+userSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { email: { $type: 'string' } } }
 );
 
 const User = mongoose.model('User', userSchema);
