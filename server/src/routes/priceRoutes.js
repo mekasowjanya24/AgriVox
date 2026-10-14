@@ -15,8 +15,8 @@ router.get('/meta', getPriceMeta);
 router.get('/keep-warm', keepWarm);
 router.get('/', getPrices);
 
-// Forecast & advisor
-router.get('/forecast', authRequired, getForecast);
+// Forecast & advisor (forecast is public market intelligence; advisor requires user context)
+router.get('/forecast', getForecast);
 router.get('/advisor', authRequired, getAdvisor);
 
 export default router;

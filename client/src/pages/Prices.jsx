@@ -116,13 +116,25 @@ export const Prices = () => {
     setPriceError(false);
 
     try {
-      const [historyRes, forecastRes] = await Promise.all([
+      const [historyResult, forecastResult] = await Promise.allSettled([
         api.get(`/prices?commodity=${encodeURIComponent(commodity)}&market=${encodeURIComponent(market)}&limit=60`),
         api.get(`/prices/forecast?commodity=${encodeURIComponent(commodity)}&market=${encodeURIComponent(market)}&horizon=14`),
       ]);
 
-      setPriceHistory(historyRes.data?.data || []);
-      setForecast(forecastRes.data?.data || null);
+      const historyData = historyResult.status === 'fulfilled' ? (historyResult.value.data?.data || []) : [];
+      const forecastData = forecastResult.status === 'fulfilled' ? (forecastResult.value.data?.data || null) : null;
+
+      if (historyResult.status === 'rejected' && forecastResult.status === 'rejected') {
+        console.warn('Both price history and forecast failed:', historyResult.reason, forecastResult.reason);
+        setPriceError(true);
+        setPriceHistory([]);
+        setForecast(null);
+        setAdvisor(null);
+      } else {
+        setPriceHistory(historyData);
+        setForecast(forecastData);
+        setPriceError(false);
+      }
     } catch (err) {
       console.warn('Price data loading error:', err);
       // Never crash or show raw error; record error state for retry UI
