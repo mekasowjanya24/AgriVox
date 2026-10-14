@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { normalizePhone } from '../utils/phone.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,6 +13,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      set: (v) => normalizePhone(v),
       match: [/^\d{10}$/, 'Phone number must be exactly 10 digits'],
     },
     email: {
@@ -53,11 +55,6 @@ const userSchema = new mongoose.Schema(
       },
     },
   }
-);
-
-userSchema.index(
-  { email: 1 },
-  { unique: true, partialFilterExpression: { email: { $type: 'string' } } }
 );
 
 const User = mongoose.model('User', userSchema);

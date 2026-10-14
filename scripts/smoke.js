@@ -173,8 +173,10 @@ async function runSmokeTests() {
     logResult('5. Forecast & Advisor', false, err.message);
   }
 
-  const testPhone2 = `998${Math.floor(1000000 + Math.random() * 9000000)}`;
+  const testPhone2 = `982${Math.floor(1000000 + Math.random() * 9000000)}`;
+  const testPhone3 = `983${Math.floor(1000000 + Math.random() * 9000000)}`;
   let authToken2 = null;
+  let authToken3 = null;
 
   // 6a. Register First Test Farmer (No Email)
   try {
@@ -221,7 +223,29 @@ async function runSmokeTests() {
     logResult('6b. Register Farmer 2 without email - No email_1 collision', false, err.message);
   }
 
-  // 6c. Register Duplicate Phone -> Must Return HTTP 409 with Phone Message & No Raw DB Wording
+  // 6c. Register Third Test Farmer (Sequential 3rd Registration)
+  try {
+    const regRes3 = await request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone: testPhone3,
+        password: 'Password123!',
+        name: 'SmokeTest Farmer Three',
+        language: 'te',
+      }),
+    });
+
+    if (regRes3.status === 201 && regRes3.body?.data?.accessToken) {
+      authToken3 = regRes3.body.data.accessToken;
+      logResult('6c. Register Farmer 3 sequentially without email', true, `Phone: ${testPhone3}`);
+    } else {
+      logResult('6c. Register Farmer 3 sequentially without email', false, `Status: ${regRes3.status}, Msg: ${regRes3.body?.message}`);
+    }
+  } catch (err) {
+    logResult('6c. Register Farmer 3 sequentially without email', false, err.message);
+  }
+
+  // 6d. Register Duplicate Phone -> Must Return HTTP 409 with Phone Message & No Raw DB Wording
   try {
     const dupRes = await request('/auth/register', {
       method: 'POST',
@@ -238,32 +262,54 @@ async function runSmokeTests() {
     const noRawWording = !msg.toLowerCase().includes('record') && !msg.toLowerCase().includes('unique key') && !msg.toLowerCase().includes('e11000') && !msg.toLowerCase().includes('email');
 
     logResult(
-      '6c. Duplicate Phone Returns 409 with Friendly Message',
+      '6d. Duplicate Phone Returns 409 with Friendly Message',
       is409 && hasPhoneMsg && noRawWording,
       `Status: ${dupRes.status}, Msg: "${msg}"`
     );
   } catch (err) {
-    logResult('6c. Duplicate Phone Returns 409 with Friendly Message', false, err.message);
+    logResult('6d. Duplicate Phone Returns 409 with Friendly Message', false, err.message);
   }
 
-  // 7. Login Test Farmer
+  // 7a. Login Test Farmer with Formatted Phone (+91 and spaces)
   try {
+    const formattedPhone = `+91 ${testPhone.slice(0, 5)} ${testPhone.slice(5)}`;
     const loginRes = await request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({
-        phone: testPhone,
+        phone: formattedPhone,
         password: 'Password123!',
       }),
     });
 
     if (loginRes.status === 200 && loginRes.body?.data?.accessToken) {
       authToken = loginRes.body.data.accessToken;
-      logResult('7. Login Test Farmer (/api/auth/login)', true, 'Token received');
+      logResult('7a. Login with Formatted Phone (+91 & spaces) (/api/auth/login)', true, `Phone formatted: "${formattedPhone}"`);
     } else {
-      logResult('7. Login Test Farmer (/api/auth/login)', false, `Status: ${loginRes.status}`);
+      logResult('7a. Login with Formatted Phone (+91 & spaces) (/api/auth/login)', false, `Status: ${loginRes.status}`);
     }
   } catch (err) {
-    logResult('7. Login Test Farmer (/api/auth/login)', false, err.message);
+    logResult('7a. Login with Formatted Phone (+91 & spaces) (/api/auth/login)', false, err.message);
+  }
+
+  // 7b. Login with Wrong Password -> Must return 401 with "Mobile number or password is wrong."
+  try {
+    const badLoginRes = await request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        phone: testPhone,
+        password: 'WrongPassword999!',
+      }),
+    });
+
+    const is401 = badLoginRes.status === 401;
+    const msg = badLoginRes.body?.message || '';
+    logResult(
+      '7b. Wrong Password Returns 401 Generic Message',
+      is401 && msg === 'Mobile number or password is wrong.',
+      `Status: ${badLoginRes.status}, Msg: "${msg}"`
+    );
+  } catch (err) {
+    logResult('7b. Wrong Password Returns 401 Generic Message', false, err.message);
   }
 
   const authHeaders = { Authorization: `Bearer ${authToken}` };

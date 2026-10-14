@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
+import { normalizePhone, isValidPhone } from '../utils/phone.js';
 import { Sprout, Phone, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
 
 export const Register = () => {
@@ -17,17 +18,21 @@ export const Register = () => {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({ name: '', phone: '', password: '' });
 
-  const validateFields = () => {
+  const validateFields = (cleanPhone) => {
     const errs = { name: '', phone: '', password: '' };
     let isValid = true;
 
-    if (!name.trim()) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       errs.name = t('auth.nameRequired');
+      isValid = false;
+    } else if (trimmedName.length < 2 || trimmedName.length > 50) {
+      errs.name = t('auth.nameLengthRequired');
       isValid = false;
     }
 
-    if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
-      errs.phone = t('auth.phoneDigitsRequired');
+    if (!cleanPhone || !isValidPhone(cleanPhone)) {
+      errs.phone = t('auth.phoneInvalid');
       isValid = false;
     }
 
@@ -44,26 +49,30 @@ export const Register = () => {
     e.preventDefault();
     setError('');
 
-    if (!validateFields()) {
+    const cleanPhone = normalizePhone(phone);
+    if (!validateFields(cleanPhone)) {
       return;
     }
 
     setLoading(true);
     try {
-      await register({ name: name.trim(), phone, password, language, role: 'farmer' });
+      await register({ name: name.trim(), phone: cleanPhone, password, language, role: 'farmer' });
       navigate('/');
     } catch (err) {
+      const status = err.response?.status;
+      const field = err.response?.data?.field;
       const serverMsg = err.response?.data?.message || '';
-      const isDuplicate = err.response?.status === 409 || serverMsg.toLowerCase().includes('already') || serverMsg.toLowerCase().includes('duplicate');
 
-      let userMsg = '';
-      if (isDuplicate) {
-        userMsg = t('auth.phoneAlreadyRegistered');
+      if (status === 409 && (field === 'phone' || serverMsg.toLowerCase().includes('mobile number') || serverMsg.toLowerCase().includes('phone'))) {
+        const userMsg = t('auth.phoneAlreadyRegistered');
         setFieldErrors((prev) => ({ ...prev, phone: userMsg }));
+        setError(userMsg);
       } else {
-        userMsg = i18n.language === 'te' ? 'నమోదు విఫలమైంది. దయచేసి వివరాలను సరిచూసి మళ్ళీ ప్రయత్నించండి.' : 'Registration failed. Please check your details and try again.';
+        const fallbackMsg = i18n.language === 'te'
+          ? 'నమోదు విఫలమైంది. దయచేసి వివరాలను సరిచూసి మళ్ళీ ప్రయత్నించండి.'
+          : 'Registration failed. Please check your details and try again.';
+        setError(serverMsg || fallbackMsg);
       }
-      setError(userMsg);
     } finally {
       setLoading(false);
     }
@@ -132,13 +141,12 @@ export const Register = () => {
                 <Phone className="w-5 h-5 text-earth-400 absolute left-3.5 top-4" />
                 <input
                   type="tel"
-                  maxLength={10}
+                  maxLength={16}
                   className={`input-farmer pl-11 ${fieldErrors.phone ? 'border-red-500' : ''}`}
                   placeholder={t('auth.phonePlaceholder')}
                   value={phone}
                   onChange={(e) => {
-                    const cleaned = e.target.value.replace(/\D/g, '');
-                    setPhone(cleaned);
+                    setPhone(e.target.value);
                     if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: '' }));
                   }}
                   required

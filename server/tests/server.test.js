@@ -13,6 +13,7 @@ import Harvest from '../src/models/Harvest.js';
 import Price from '../src/models/Price.js';
 
 import { runSeed } from '../src/seed/seed.js';
+import { errorHandler } from '../src/middleware/errorHandler.js';
 
 let farmerToken = '';
 let adminToken = '';
@@ -111,6 +112,111 @@ describe('1. Authentication & Role-Based Authorization', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
+  });
+
+  it('should register 3 new numbers in a row, verify all 3 succeed and can log in', async () => {
+    const phones = ['9810000001', '9810000002', '9810000003'];
+    await User.deleteMany({ phone: { $in: phones } });
+
+    for (let i = 0; i < phones.length; i++) {
+      const regRes = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: `Sequential Farmer ${i + 1}`,
+          phone: phones[i],
+          password: 'Password@123',
+          language: 'te',
+        });
+      expect(regRes.status).toBe(201);
+      expect(regRes.body.success).toBe(true);
+      expect(regRes.body.data.user.phone).toBe(phones[i]);
+
+      // Verify they can log in
+      const loginRes = await request(app)
+        .post('/api/auth/login')
+        .send({
+          phone: phones[i],
+          password: 'Password@123',
+        });
+      expect(loginRes.status).toBe(200);
+      expect(loginRes.body.success).toBe(true);
+      expect(loginRes.body.data.accessToken).toBeDefined();
+    }
+
+    await User.deleteMany({ phone: { $in: phones } });
+  });
+
+  it('should never return the phone duplicate message when a non-phone unique collision happens', () => {
+    let statusCode = null;
+    let jsonBody = null;
+    const req = {};
+    const res = {
+      status(code) {
+        statusCode = code;
+        return this;
+      },
+      json(data) {
+        jsonBody = data;
+        return this;
+      },
+    };
+    const next = () => {};
+
+    const nonPhoneErr = {
+      code: 11000,
+      keyPattern: { email: 1 },
+      keyValue: { email: 'duplicate@test.com' },
+    };
+
+    errorHandler(nonPhoneErr, req, res, next);
+
+    expect(statusCode).toBe(409);
+    expect(jsonBody.success).toBe(false);
+    expect(jsonBody.message).not.toContain('mobile number');
+    expect(jsonBody.message).not.toContain('phone');
+    expect(jsonBody.message).toContain('duplicate record');
+    expect(jsonBody.field).toBe('email');
+  });
+
+  it('should allow login with spaces, dashes, or +91 country code and normalize correctly', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({
+        phone: '+91 88888 88888',
+        password: 'Farmer@123',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.user.phone).toBe('8888888888');
+  });
+
+  it('should return 401 with generic message on wrong password', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({
+        phone: '8888888888',
+        password: 'IncorrectPassword!',
+      });
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe('Mobile number or password is wrong.');
+  });
+
+  it('should return 403 when user account is deactivated', async () => {
+    await User.updateOne({ phone: '7777777777' }, { isActive: false });
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({
+        phone: '7777777777',
+        password: 'Password@123',
+      });
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe('Your account has been deactivated. Please contact support.');
+    await User.updateOne({ phone: '7777777777' }, { isActive: true });
   });
 
   it('FR-AUTH-02: should login existing farmer', async () => {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 import { changeLanguage } from '../i18n/index.js';
+import { normalizePhone, isValidPhone } from '../utils/phone.js';
 import { Sprout, Phone, Lock, ArrowRight, AlertCircle, Globe } from 'lucide-react';
 
 export const Login = () => {
@@ -24,18 +25,26 @@ export const Login = () => {
     e.preventDefault();
     setError('');
 
-    if (!phone || phone.length !== 10) {
-      setError(i18n.language === 'te' ? 'దయచేసి 10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి' : 'Please enter a valid 10-digit phone number');
+    const cleanPhone = normalizePhone(phone);
+    if (!cleanPhone || !isValidPhone(cleanPhone) || !password) {
+      setError(t('auth.invalidCredentials'));
       return;
     }
 
     setLoading(true);
     try {
-      await login(phone, password);
-      navigate('/');
+      const userData = await login(cleanPhone, password);
+      if (userData?.role === 'admin') {
+        navigate('/admin/stats');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
-      const msg = err.response?.data?.message || (i18n.language === 'te' ? 'లాగిన్ విఫలమైంది. మొబైల్ లేదా పాస్‌వర్డ్ తనిఖీ చేయండి.' : 'Login failed. Please check phone or password.');
-      setError(msg);
+      if (err.response?.status === 403) {
+        setError(t('auth.accountDeactivated'));
+      } else {
+        setError(t('auth.invalidCredentials'));
+      }
     } finally {
       setLoading(false);
     }
@@ -107,11 +116,11 @@ export const Login = () => {
                 <Phone className="w-5 h-5 text-earth-400 absolute left-3.5 top-4" />
                 <input
                   type="tel"
-                  maxLength={10}
+                  maxLength={16}
                   className="input-farmer pl-11"
                   placeholder={t('auth.phonePlaceholder')}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setPhone(e.target.value)}
                   required
                 />
               </div>

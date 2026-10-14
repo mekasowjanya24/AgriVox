@@ -6,7 +6,8 @@ export const errorHandler = (err, req, res, next) => {
     const keyPattern = err.keyPattern || {};
     const keyFields = Object.keys(keyPattern);
 
-    if (keyFields.includes('phone') || err.message?.includes('phone_1') || err.keyValue?.phone) {
+    // Return the phone message ONLY when err.keyPattern contains phone
+    if (keyPattern.phone || keyFields.includes('phone')) {
       return res.status(409).json({
         success: false,
         message: 'This mobile number is already registered. Please log in.',
@@ -14,19 +15,17 @@ export const errorHandler = (err, req, res, next) => {
       });
     }
 
-    if (keyFields.includes('email') || err.message?.includes('email_1') || err.keyValue?.email) {
-      return res.status(409).json({
-        success: false,
-        message: 'This email is already registered. Please log in.',
-        field: 'email',
-      });
-    }
+    // For any other duplicate-key field, log the real field name server-side and return a generic friendly error, never the phone message
+    const realFields = keyFields.length > 0 ? keyFields.join(', ') : (err.message || 'unknown');
+    console.error(`[ErrorHandler] Non-phone duplicate key collision on field(s): ${realFields}`, {
+      keyPattern,
+      keyValue: err.keyValue,
+    });
 
-    const field = keyFields[0] || 'information';
     return res.status(409).json({
       success: false,
-      message: `This ${field} is already registered. Please log in.`,
-      field,
+      message: 'A duplicate record was detected. Please check your information and try again.',
+      field: keyFields[0] || 'duplicate',
     });
   }
 

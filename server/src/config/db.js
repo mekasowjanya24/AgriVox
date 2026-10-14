@@ -6,27 +6,65 @@ let mongoMemoryServer = null;
 export const cleanStaleUserIndexes = async () => {
   try {
     const db = mongoose.connection.db;
-    if (!db) return;
+    if (!db) {
+      console.warn('[AgriVox] Database connection not ready for index check.');
+      return;
+    }
 
+    const currentDbName = mongoose.connection.name || (db ? db.databaseName : 'agrivox');
+    console.log(`[AgriVox] Checking and cleaning user collection indexes on database: ${currentDbName}...`);
+
+    // Ensure users collection exists so indexes can be checked and synchronized
     const collections = await db.listCollections({ name: 'users' }).toArray();
-    if (collections.length === 0) return;
+    if (collections.length === 0) {
+      console.log(`[AgriVox] Creating 'users' collection in ${currentDbName} to initialize clean indexes...`);
+      await db.createCollection('users');
+    }
 
     const userCollection = db.collection('users');
     const indexes = await userCollection.indexes();
 
     for (const idx of indexes) {
+      // Drop any stale email index (email_1 or key.email)
       const isEmailIndex = idx.name === 'email_1' || (idx.key && idx.key.email);
-      const isStale = isEmailIndex && (!idx.partialFilterExpression || !idx.partialFilterExpression.email);
-      if (isStale) {
-        console.log(`[AgriVox] Safely dropping stale unique index '${idx.name}' on users collection...`);
-        await userCollection.dropIndex(idx.name);
-        console.log(`[AgriVox] Stale index '${idx.name}' dropped successfully.`);
+      if (isEmailIndex) {
+        console.log(`[AgriVox] Dropping stale unique index '${idx.name}' on ${currentDbName}.users...`);
+        try {
+          await userCollection.dropIndex(idx.name);
+          console.log(`[AgriVox] Stale index '${idx.name}' dropped successfully.`);
+        } catch (dropErr) {
+          console.warn(`[AgriVox] Notice dropping index '${idx.name}':`, dropErr.message);
+        }
       }
     }
 
+    // Opportunistically check and drop email_1 on 'test' database if accessible on cluster
+    try {
+      const client = mongoose.connection.getClient ? mongoose.connection.getClient() : mongoose.connection.client;
+      if (client && currentDbName !== 'test') {
+        const testDb = client.db('test');
+        const testCols = await testDb.listCollections({ name: 'users' }).toArray();
+        if (testCols.length > 0) {
+          const testUserCol = testDb.collection('users');
+          const testIndexes = await testUserCol.indexes();
+          for (const tIdx of testIndexes) {
+            if (tIdx.name === 'email_1' || (tIdx.key && tIdx.key.email)) {
+              console.log(`[AgriVox] Dropping stale index '${tIdx.name}' on test.users...`);
+              await testUserCol.dropIndex(tIdx.name);
+              console.log(`[AgriVox] Stale index '${tIdx.name}' dropped on test.users.`);
+            }
+          }
+        }
+      }
+    } catch (multiDbErr) {
+      // Multi-db sweep is opportunistic; ignore permission differences
+    }
+
+    // Synchronize User model indexes (ensures phone_1 unique index is in place)
     await User.syncIndexes();
+    console.log('[AgriVox] User indexes synchronized successfully.');
   } catch (err) {
-    console.warn('[AgriVox] Stale user index check notice:', err.message);
+    console.warn('[AgriVox] Stale user index check notice (non-fatal):', err.message);
   }
 };
 

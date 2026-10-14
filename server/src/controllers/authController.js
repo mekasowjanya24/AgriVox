@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import User from '../models/User.js';
 import RefreshToken from '../models/RefreshToken.js';
+import { normalizePhone } from '../utils/phone.js';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -9,15 +10,29 @@ import {
 } from '../utils/jwt.js';
 
 export const registerSchema = z.object({
-  name: z.string().min(1, 'Name is required').trim(),
-  phone: z.string().regex(/^\d{10}$/, 'Phone number must be exactly 10 digits'),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Name must be between 2 and 50 characters')
+    .max(50, 'Name must be between 2 and 50 characters'),
+  phone: z
+    .string()
+    .transform((v) => normalizePhone(v))
+    .refine((v) => /^[6-9]\d{9}$/.test(v), {
+      message: 'Mobile number must be 10 digits starting with 6, 7, 8, or 9',
+    }),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   role: z.enum(['farmer', 'admin']).optional(),
   language: z.enum(['en', 'te']).optional(),
 });
 
 export const loginSchema = z.object({
-  phone: z.string().regex(/^\d{10}$/, 'Phone number must be exactly 10 digits'),
+  phone: z
+    .string()
+    .transform((v) => normalizePhone(v))
+    .refine((v) => /^[6-9]\d{9}$/.test(v), {
+      message: 'Mobile number must be 10 digits starting with 6, 7, 8, or 9',
+    }),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -30,8 +45,19 @@ export const updateMeSchema = z.object({
 export const register = async (req, res, next) => {
   try {
     const { name, phone, password, role, language } = req.body;
+    const normalizedPhone = normalizePhone(phone);
 
-    const existingUser = await User.findOne({ phone });
+    if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 50) {
+      return res.status(400).json({ success: false, message: 'Name must be between 2 and 50 characters', field: 'name' });
+    }
+    if (!normalizedPhone || !/^[6-9]\d{9}$/.test(normalizedPhone)) {
+      return res.status(400).json({ success: false, message: 'Mobile number must be 10 digits starting with 6, 7, 8, or 9', field: 'phone' });
+    }
+    if (!password || password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters', field: 'password' });
+    }
+
+    const existingUser = await User.findOne({ phone: normalizedPhone });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -44,8 +70,8 @@ export const register = async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, salt);
 
     const user = await User.create({
-      name,
-      phone,
+      name: name.trim(),
+      phone: normalizedPhone,
       passwordHash,
       role: role || 'farmer',
       language: language || 'te',
@@ -91,19 +117,27 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const { phone, password } = req.body;
+    const normalizedPhone = normalizePhone(phone);
 
-    const user = await User.findOne({ phone });
+    if (!normalizedPhone || !/^[6-9]\d{9}$/.test(normalizedPhone) || !password) {
+      return res.status(401).json({
+        success: false,
+        message: 'Mobile number or password is wrong.',
+      });
+    }
+
+    const user = await User.findOne({ phone: normalizedPhone });
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid phone number or password',
+        message: 'Mobile number or password is wrong.',
       });
     }
 
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'Account is deactivated. Please contact admin.',
+        message: 'Your account has been deactivated. Please contact support.',
       });
     }
 
@@ -111,7 +145,7 @@ export const login = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid phone number or password',
+        message: 'Mobile number or password is wrong.',
       });
     }
 

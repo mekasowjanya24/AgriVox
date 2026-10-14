@@ -41,9 +41,13 @@
     "registerSuccess": "Account registered successfully!",
     "logoutConfirm": "Are you sure you want to log out?",
     "nameRequired": "Full Name is required",
+    "nameLengthRequired": "Full Name must be between 2 and 50 characters",
     "phoneDigitsRequired": "Mobile number must be exactly 10 digits",
+    "phoneInvalid": "Mobile number must be 10 digits starting with 6, 7, 8, or 9",
     "passwordLengthRequired": "Password must be at least 6 characters",
-    "phoneAlreadyRegistered": "This mobile number is already registered. Please log in."
+    "phoneAlreadyRegistered": "This mobile number is already registered. Please log in.",
+    "invalidCredentials": "Mobile number or password is wrong.",
+    "accountDeactivated": "Your account has been deactivated. Please contact support."
   },
   "dashboard": {
     "greeting": "Welcome, {{name}}!",
