@@ -26,14 +26,28 @@ import {
   Legend,
 } from 'recharts';
 
+const DEFAULT_COMMODITIES = ['Paddy', 'Cotton', 'Chilli', 'Maize', 'Red Gram', 'Turmeric'];
+const DEFAULT_COMBINATIONS = {
+  Paddy: ['Warangal', 'Khammam'],
+  Cotton: ['Warangal', 'Khammam'],
+  Chilli: ['Warangal', 'Khammam'],
+  Maize: ['Warangal', 'Khammam'],
+  'Red Gram': ['Warangal', 'Khammam'],
+  Turmeric: ['Warangal', 'Khammam'],
+};
+
 export const Prices = () => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { isOnline } = useSync();
 
-  const [meta, setMeta] = useState({ commodities: [], markets: [], combinations: {} });
-  const [commodity, setCommodity] = useState('');
-  const [market, setMarket] = useState('');
+  const [meta, setMeta] = useState({
+    commodities: DEFAULT_COMMODITIES,
+    markets: ['Warangal', 'Khammam'],
+    combinations: DEFAULT_COMBINATIONS,
+  });
+  const [commodity, setCommodity] = useState('Paddy');
+  const [market, setMarket] = useState('Warangal');
 
   const [priceHistory, setPriceHistory] = useState([]);
   const [forecast, setForecast] = useState(null);
@@ -44,84 +58,85 @@ export const Prices = () => {
   const [quantity, setQuantity] = useState(50);
 
   const [loading, setLoading] = useState(true);
+  const [metaError, setMetaError] = useState(false);
+  const [priceError, setPriceError] = useState(false);
 
   // 1. Fetch metadata with actual data combinations
+  const fetchMeta = async () => {
+    setMetaError(false);
+    try {
+      const res = await api.get('/prices/meta');
+      const metaData = res.data?.data || {};
+      const comms = Array.isArray(metaData.commodities) && metaData.commodities.length > 0
+        ? metaData.commodities
+        : DEFAULT_COMMODITIES;
+      const combos = metaData.combinations && Object.keys(metaData.combinations).length > 0
+        ? metaData.combinations
+        : DEFAULT_COMBINATIONS;
+
+      setMeta({
+        commodities: comms,
+        markets: metaData.markets || ['Warangal', 'Khammam'],
+        combinations: combos,
+      });
+
+      // Ensure valid crop and market preselected
+      setCommodity((prevComm) => {
+        const selectedCrop = comms.includes(prevComm) ? prevComm : comms[0];
+        const validMkts = combos[selectedCrop] || ['Warangal', 'Khammam'];
+        setMarket((prevMkt) => (validMkts.includes(prevMkt) ? prevMkt : validMkts[0]));
+        return selectedCrop;
+      });
+    } catch (err) {
+      console.warn('Price meta error:', err);
+      setMetaError(true);
+    }
+  };
+
   useEffect(() => {
-    let isMounted = true;
-    const fetchMeta = async () => {
-      try {
-        const res = await api.get('/prices/meta');
-        const metaData = res.data.data || {};
-        if (isMounted) {
-          setMeta(metaData);
-          const comms = metaData.commodities || [];
-          const combos = metaData.combinations || {};
-          if (comms.length > 0) {
-            const initialComm = comms[0];
-            setCommodity(initialComm);
-            const validMkts = combos[initialComm] || [];
-            if (validMkts.length > 0) {
-              setMarket(validMkts[0]);
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('Price meta error:', err);
-      }
-    };
     fetchMeta();
-    return () => { isMounted = false; };
   }, []);
 
   const handleCommodityChange = (newComm) => {
     setCommodity(newComm);
-    const validMkts = meta.combinations?.[newComm] || [];
-    if (validMkts.length > 0) {
-      if (!validMkts.includes(market)) {
-        setMarket(validMkts[0]);
-      }
-    } else {
-      setMarket('');
+    const validMkts = meta.combinations?.[newComm] || DEFAULT_COMBINATIONS[newComm] || ['Warangal'];
+    if (!validMkts.includes(market)) {
+      setMarket(validMkts[0]);
     }
   };
 
   // 2. Fetch price history and 14-day ML forecast on commodity/market change
-  useEffect(() => {
+  const loadPriceAndForecast = async () => {
     if (!commodity || !market) {
       setLoading(false);
       return;
     }
 
-    let isMounted = true;
-    const loadPriceAndForecast = async () => {
-      setLoading(true);
+    setLoading(true);
+    setPriceError(false);
 
-      try {
-        const [historyRes, forecastRes] = await Promise.all([
-          api.get(`/prices?commodity=${commodity}&market=${market}&limit=60`),
-          api.get(`/prices/forecast?commodity=${commodity}&market=${market}&horizon=14`),
-        ]);
+    try {
+      const [historyRes, forecastRes] = await Promise.all([
+        api.get(`/prices?commodity=${encodeURIComponent(commodity)}&market=${encodeURIComponent(market)}&limit=60`),
+        api.get(`/prices/forecast?commodity=${encodeURIComponent(commodity)}&market=${encodeURIComponent(market)}&horizon=14`),
+      ]);
 
-        if (isMounted) {
-          setPriceHistory(historyRes.data.data || []);
-          setForecast(forecastRes.data.data || null);
-        }
-      } catch (err) {
-        if (isMounted) {
-          // Never display raw API error text to the farmer
-          setPriceHistory([]);
-          setForecast(null);
-          setAdvisor(null);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+      setPriceHistory(historyRes.data?.data || []);
+      setForecast(forecastRes.data?.data || null);
+    } catch (err) {
+      console.warn('Price data loading error:', err);
+      // Never crash or show raw error; record error state for retry UI
+      setPriceError(true);
+      setPriceHistory([]);
+      setForecast(null);
+      setAdvisor(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadPriceAndForecast();
-    return () => { isMounted = false; };
   }, [commodity, market]);
 
   // 3. Fetch advisor when commodity/market/storageCost/quantity changes (debounced 250ms)
@@ -134,9 +149,9 @@ export const Prices = () => {
     const timer = setTimeout(async () => {
       try {
         const advisorRes = await api.get(
-          `/prices/advisor?commodity=${commodity}&market=${market}&quantity=${quantity}&storageCost=${storageCost}`
+          `/prices/advisor?commodity=${encodeURIComponent(commodity)}&market=${encodeURIComponent(market)}&quantity=${quantity}&storageCost=${storageCost}`
         );
-        setAdvisor(advisorRes.data.data);
+        setAdvisor(advisorRes.data?.data || null);
       } catch (err) {
         setAdvisor(null);
       }
@@ -193,6 +208,23 @@ export const Prices = () => {
         </h1>
       </div>
 
+      {/* Meta retry banner if metadata call fails */}
+      {metaError && (
+        <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center justify-between text-xs text-amber-900">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+            <span>{t('prices.loadError', 'Failed to load price data')}</span>
+          </div>
+          <button
+            type="button"
+            onClick={fetchMeta}
+            className="font-bold underline text-amber-950 ml-2 hover:text-amber-800"
+          >
+            {t('common.retry', 'Try Again')}
+          </button>
+        </div>
+      )}
+
       {/* Selectors: Commodity & Market */}
       <div className="card-farmer bg-white p-4">
         <div className="grid grid-cols-2 gap-3">
@@ -234,8 +266,38 @@ export const Prices = () => {
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="card-farmer bg-white p-8 text-center border border-cream-200 rounded-2xl shadow-sm">
+          <div className="w-8 h-8 mx-auto mb-2 border-3 border-agri-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-earth-600 font-medium">{t('common.loading', 'Loading...')}</p>
+        </div>
+      )}
+
+      {/* Friendly Error with Retry Button (Requirement 4) */}
+      {priceError && !loading && (
+        <div className="card-farmer bg-white p-6 text-center border border-amber-200 rounded-2xl shadow-sm">
+          <div className="w-12 h-12 mx-auto mb-3 bg-amber-50 rounded-full flex items-center justify-center text-amber-700">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-earth-900 mb-1">
+            {t('prices.loadError', 'Failed to load price data')}
+          </h3>
+          <p className="text-xs text-earth-600 mb-4 max-w-xs mx-auto">
+            {t('prices.noPricesSub')}
+          </p>
+          <button
+            type="button"
+            onClick={loadPriceAndForecast}
+            className="btn-farmer inline-flex items-center gap-2 px-5 py-2.5 bg-agri-700 text-white rounded-xl text-sm font-bold shadow hover:bg-agri-800"
+          >
+            {t('common.retry', 'Try Again')}
+          </button>
+        </div>
+      )}
+
       {/* Friendly empty state if no prices for crop and market yet */}
-      {!loading && !hasPriceData && (
+      {!loading && !priceError && !hasPriceData && (
         <div className="card-farmer bg-white p-8 text-center border border-cream-200 rounded-2xl shadow-sm">
           <div className="w-14 h-14 mx-auto mb-3 bg-agri-50 rounded-full flex items-center justify-center text-agri-700">
             <TrendingUp className="w-7 h-7 opacity-75" />

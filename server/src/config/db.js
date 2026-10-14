@@ -9,13 +9,16 @@ export const connectDB = async (customUri = null) => {
   // Sanitize URI for safe console logging (hide user:password if present)
   const safeUri = uri.replace(/\/\/[^@]+@/, '//***:***@');
 
+  const dbName = process.env.MONGO_DB_NAME || 'agrivox';
+
   try {
     if (uri && process.env.NODE_ENV !== 'test') {
       // 10s timeout allows MongoDB Atlas cloud handshake and replica set election
       await mongoose.connect(uri, {
+        dbName,
         serverSelectionTimeoutMS: 5000,
       });
-      console.log(`[AgriVox] Successfully connected to MongoDB at: ${safeUri}`);
+      console.log(`[AgriVox] Successfully connected to MongoDB [database: ${dbName}] at: ${safeUri}`);
       return;
     }
   } catch (err) {
@@ -33,8 +36,8 @@ export const connectDB = async (customUri = null) => {
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       mongoMemoryServer = await MongoMemoryServer.create();
       const memUri = mongoMemoryServer.getUri();
-      await mongoose.connect(memUri);
-      console.log(`[AgriVox] Connected to In-Memory MongoDB at: ${memUri}`);
+      await mongoose.connect(memUri, { dbName });
+      console.log(`[AgriVox] Connected to In-Memory MongoDB [database: ${dbName}] at: ${memUri}`);
     } catch (memErr) {
       console.error('[AgriVox] Failed to initialize In-Memory MongoDB:', memErr.message);
       throw memErr;

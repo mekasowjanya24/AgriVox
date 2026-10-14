@@ -383,4 +383,21 @@ describe('6. Prices Metadata & Combinations (FR-PR-02)', () => {
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
   });
+
+  test('7. System & Database Health Endpoints', async () => {
+    const healthRes = await request(app).get('/api/health');
+    expect(healthRes.status).toBe(200);
+    expect(healthRes.body.status).toBe('ok');
+
+    const dbHealthRes = await request(app).get('/api/health/db');
+    expect(dbHealthRes.status).toBe(200);
+    expect(dbHealthRes.body.status).toBe('ok');
+    expect(typeof dbHealthRes.body.database).toBe('string');
+    expect(dbHealthRes.body.priceDocuments).toBeGreaterThan(0);
+    expect(dbHealthRes.body.distinctPairsCount).toBeGreaterThan(0);
+    expect(typeof dbHealthRes.body.mlServiceConfigured).toBe('boolean');
+    // Ensure no secrets or connection strings are returned
+    expect(JSON.stringify(dbHealthRes.body)).not.toMatch(/mongodb(\+srv)?:\/\//);
+  });
 });
+

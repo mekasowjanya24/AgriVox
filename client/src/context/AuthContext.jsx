@@ -36,11 +36,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (phone, password) => {
     const res = await api.post('/auth/login', { phone, password });
-    const { user: userData, accessToken } = res.data.data;
+    const { user: userData, accessToken, refreshToken } = res.data.data;
     setUser(userData);
     setToken(accessToken);
     localStorage.setItem('agrivox_user', JSON.stringify(userData));
     localStorage.setItem('agrivox_token', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('agrivox_refresh_token', refreshToken);
+    }
     if (userData.language) {
       i18n.changeLanguage(userData.language);
       localStorage.setItem('agrivox_lang', userData.language);
@@ -50,11 +53,14 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     const res = await api.post('/auth/register', userData);
-    const { user: newUser, accessToken } = res.data.data;
+    const { user: newUser, accessToken, refreshToken } = res.data.data;
     setUser(newUser);
     setToken(accessToken);
     localStorage.setItem('agrivox_user', JSON.stringify(newUser));
     localStorage.setItem('agrivox_token', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('agrivox_refresh_token', refreshToken);
+    }
     if (newUser.language) {
       i18n.changeLanguage(newUser.language);
       localStorage.setItem('agrivox_lang', newUser.language);
@@ -65,7 +71,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       if (navigator.onLine) {
-        await api.post('/auth/logout');
+        const savedRefreshToken = localStorage.getItem('agrivox_refresh_token');
+        await api.post('/auth/logout', { refreshToken: savedRefreshToken });
       }
     } catch {
       // Ignore network errors on logout
@@ -74,6 +81,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('agrivox_user');
     localStorage.removeItem('agrivox_token');
+    localStorage.removeItem('agrivox_refresh_token');
   };
 
   const updateProfile = async (data) => {

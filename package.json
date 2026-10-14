@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "smoke": "node scripts/smoke.js",
     "seed:prices": "npm --prefix server run seed:prices"
   },
   "devDependencies": {

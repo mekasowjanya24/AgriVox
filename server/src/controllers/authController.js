@@ -59,10 +59,11 @@ export const register = async (req, res, next) => {
       expiresAt,
     });
 
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', refreshTokenRaw, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -78,6 +79,7 @@ export const register = async (req, res, next) => {
           storageCostPerQuintalPerDay: user.storageCostPerQuintalPerDay,
         },
         accessToken,
+        refreshToken: refreshTokenRaw,
       },
     });
   } catch (error) {
@@ -121,10 +123,11 @@ export const login = async (req, res, next) => {
       expiresAt,
     });
 
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', refreshTokenRaw, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -140,6 +143,7 @@ export const login = async (req, res, next) => {
           storageCostPerQuintalPerDay: user.storageCostPerQuintalPerDay,
         },
         accessToken,
+        refreshToken: refreshTokenRaw,
       },
     });
   } catch (error) {
@@ -206,10 +210,11 @@ export const logout = async (req, res, next) => {
       await RefreshToken.deleteOne({ tokenHash });
     }
 
+    const isProd = process.env.NODE_ENV === 'production';
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
     });
 
     return res.status(200).json({

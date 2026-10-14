@@ -43,7 +43,15 @@ export const AdminStats = () => {
 
       {loading ? (
         <div className="text-center py-12 text-earth-600">{t('common.loading')}</div>
-      ) : stats ? (
+      ) : !stats ? (
+        <div className="card-farmer text-center py-8 bg-white">
+          <AlertCircle className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+          <p className="text-sm text-earth-700 mb-3">{t('common.error')}</p>
+          <button onClick={loadStats} className="btn-primary inline-flex py-1.5 px-4 text-xs">
+            {t('common.retry')}
+          </button>
+        </div>
+      ) : (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="card-farmer bg-white p-4">
@@ -90,7 +98,7 @@ export const AdminStats = () => {
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

@@ -31,19 +31,43 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              cacheName: 'agrivox-api-v2',
+              networkTimeoutSeconds: 4,
               cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      }
+                statuses: [200],
+              },
+              plugins: [
+                {
+                  cacheWillUpdate: async ({ response }) => {
+                    if (!response || response.status !== 200) return null;
+                    try {
+                      const clone = response.clone();
+                      const body = await clone.json();
+                      if (body && body.data) {
+                        if (Array.isArray(body.data.commodities) && body.data.commodities.length === 0) {
+                          return null;
+                        }
+                      }
+                      if (body && body.success === false) {
+                        return null;
+                      }
+                    } catch (e) {
+                      // Ignore JSON parse errors for non-JSON API responses (e.g. PDF)
+                    }
+                    return response;
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     })
   ],
   server: {

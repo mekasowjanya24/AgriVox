@@ -128,18 +128,31 @@ export const AddHarvest = () => {
           <label className="block text-sm font-bold text-earth-800 mb-1.5">
             {t('cycles.crop')}
           </label>
-          <select
-            value={selectedCycleId}
-            onChange={(e) => setSelectedCycleId(e.target.value)}
-            className="input-farmer"
-            required
-          >
-            {cycles.map((c) => (
-              <option key={c._id || c.clientId} value={c._id || c.clientId}>
-                {formatBilingualText(c.crop, i18n.language)} ({formatBilingualText(c.season, i18n.language)} {c.year}) - {formatBilingualText(c.plotId?.name, i18n.language) || (i18n.language === 'te' ? 'పొలం' : 'Plot')}
-              </option>
-            ))}
-          </select>
+          {cycles.length === 0 ? (
+            <div className="text-sm text-earth-600 py-1">
+              {t('expenses.noCycles')}
+              <button
+                type="button"
+                onClick={() => navigate('/cycles/new')}
+                className="text-agri-800 font-bold underline ml-1"
+              >
+                {t('expenses.startNewCrop')}
+              </button>
+            </div>
+          ) : (
+            <select
+              value={selectedCycleId}
+              onChange={(e) => setSelectedCycleId(e.target.value)}
+              className="input-farmer"
+              required
+            >
+              {cycles.map((c) => (
+                <option key={c._id || c.clientId} value={c._id || c.clientId}>
+                  {formatBilingualText(c.crop, i18n.language)} ({formatBilingualText(c.season, i18n.language)} {c.year}) - {formatBilingualText(c.plotId?.name, i18n.language) || (i18n.language === 'te' ? 'పొలం' : 'Plot')}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -244,8 +257,8 @@ export const AddHarvest = () => {
 
         <button
           type="submit"
-          disabled={saving}
-          className="btn-primary w-full mt-3"
+          disabled={saving || cycles.length === 0}
+          className="btn-primary w-full mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? t('common.loading') : t('harvests.saveHarvest')}
         </button>

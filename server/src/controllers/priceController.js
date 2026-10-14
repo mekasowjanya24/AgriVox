@@ -1,6 +1,10 @@
 import Price from '../models/Price.js';
 import User from '../models/User.js';
-import { getOrGenerateForecast } from '../services/priceService.js';
+import {
+  getOrGenerateForecast,
+  fetchPricesFromAgmarknetOrSeed,
+  pingMLService,
+} from '../services/priceService.js';
 
 export const getPrices = async (req, res, next) => {
   try {
@@ -31,7 +35,7 @@ export const getPrices = async (req, res, next) => {
 
 export const getPriceMeta = async (req, res, next) => {
   try {
-    const pairs = await Price.aggregate([
+    let pairs = await Price.aggregate([
       {
         $group: {
           _id: { commodity: '$commodity', market: '$market' },
@@ -42,6 +46,27 @@ export const getPriceMeta = async (req, res, next) => {
         $sort: { '_id.commodity': 1, '_id.market': 1 },
       },
     ]);
+
+    // Self-heal on the fly if prices collection is empty
+    if (pairs.length === 0) {
+      try {
+        console.log('[PriceController] Empty prices collection detected, self-healing prices dataset...');
+        await fetchPricesFromAgmarknetOrSeed();
+        pairs = await Price.aggregate([
+          {
+            $group: {
+              _id: { commodity: '$commodity', market: '$market' },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $sort: { '_id.commodity': 1, '_id.market': 1 },
+          },
+        ]);
+      } catch (selfHealErr) {
+        console.warn('[PriceController] On-the-fly seed notice:', selfHealErr.message);
+      }
+    }
 
     const combinations = {};
     const validCommoditiesSet = new Set();
@@ -197,6 +222,18 @@ export const getAdvisor = async (req, res, next) => {
         mape: forecast.mape,
         model: forecast.model,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const keepWarm = async (req, res, next) => {
+  try {
+    const status = await pingMLService();
+    return res.status(200).json({
+      success: true,
+      data: status,
     });
   } catch (error) {
     next(error);

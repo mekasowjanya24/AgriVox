@@ -67,6 +67,11 @@ export const AdminUsers = () => {
 
       {loading ? (
         <div className="text-center py-8 text-earth-600">{t('common.loading')}</div>
+      ) : users.length === 0 ? (
+        <div className="card-farmer text-center py-8 bg-white">
+          <Users className="w-8 h-8 text-earth-300 mx-auto mb-2" />
+          <p className="text-sm text-earth-600">{i18n.language === 'te' ? 'రైతులు ఎవరూ కనుగొనబడలేదు' : 'No users found'}</p>
+        </div>
       ) : (
         <div className="space-y-2.5">
           {users.map((u) => (

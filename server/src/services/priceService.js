@@ -270,3 +270,14 @@ export const getOrGenerateForecast = async (commodity, market, horizon = 14, for
     });
   }
 };
+
+export const pingMLService = async () => {
+  const rawUrl = (process.env.ML_SERVICE_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
+  const ML_SERVICE_URL = rawUrl || 'http://localhost:8000';
+  try {
+    const res = await axios.get(`${ML_SERVICE_URL}/health`, { timeout: 4000 });
+    return { status: 'awake', mlServiceUrl: ML_SERVICE_URL, data: res.data };
+  } catch (err) {
+    return { status: 'sleeping_or_unreachable', mlServiceUrl: ML_SERVICE_URL, message: err.message };
+  }
+};

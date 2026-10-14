@@ -61,7 +61,12 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
+        const savedRefreshToken = localStorage.getItem('agrivox_refresh_token');
+        const res = await axios.post(
+          `${baseURL}/auth/refresh`,
+          { refreshToken: savedRefreshToken },
+          { withCredentials: true }
+        );
         const newToken = res.data.data.accessToken;
         localStorage.setItem('agrivox_token', newToken);
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;

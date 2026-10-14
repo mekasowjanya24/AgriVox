@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
+import Price from './models/Price.js';
 
 import authRoutes from './routes/authRoutes.js';
 import plotRoutes from './routes/plotRoutes.js';
@@ -63,7 +65,7 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Cache-Control'],
   })
 );
 
@@ -109,9 +111,35 @@ const loginLimiter = rateLimit({
 });
 app.use('/api/auth/login', loginLimiter);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', service: 'agrivox-server', timestamp: new Date().toISOString() });
+// Health check endpoints
+app.get(['/health', '/api/health'], (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'agrivox-server' });
+});
+
+app.get('/api/health/db', async (req, res) => {
+  try {
+    const dbName = mongoose.connection.name || (mongoose.connection.db ? mongoose.connection.db.databaseName : 'unknown');
+    const priceDocuments = await Price.countDocuments();
+    const distinctPairs = await Price.aggregate([
+      { $group: { _id: { commodity: '$commodity', market: '$market' } } },
+      { $count: 'count' },
+    ]);
+    const distinctPairsCount = distinctPairs[0]?.count || 0;
+    const mlServiceConfigured = Boolean(process.env.ML_SERVICE_URL && process.env.ML_SERVICE_URL.trim());
+
+    res.status(200).json({
+      status: 'ok',
+      database: dbName,
+      priceDocuments,
+      distinctPairsCount,
+      mlServiceConfigured,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Database health check failed',
+    });
+  }
 });
 
 // API Routes
