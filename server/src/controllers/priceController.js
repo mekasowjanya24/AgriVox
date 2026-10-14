@@ -31,16 +31,46 @@ export const getPrices = async (req, res, next) => {
 
 export const getPriceMeta = async (req, res, next) => {
   try {
-    const [commodities, markets] = await Promise.all([
-      Price.distinct('commodity'),
-      Price.distinct('market'),
+    const pairs = await Price.aggregate([
+      {
+        $group: {
+          _id: { commodity: '$commodity', market: '$market' },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { '_id.commodity': 1, '_id.market': 1 },
+      },
     ]);
+
+    const combinations = {};
+    const validCommoditiesSet = new Set();
+    const validMarketsSet = new Set();
+    const pairsList = [];
+
+    for (const item of pairs) {
+      const { commodity, market } = item._id;
+      if (!commodity || !market) continue;
+      validCommoditiesSet.add(commodity);
+      validMarketsSet.add(market);
+      pairsList.push({ commodity, market, count: item.count });
+
+      if (!combinations[commodity]) {
+        combinations[commodity] = [];
+      }
+      combinations[commodity].push(market);
+    }
+
+    const commodities = Array.from(validCommoditiesSet).sort();
+    const markets = Array.from(validMarketsSet).sort();
 
     return res.status(200).json({
       success: true,
       data: {
-        commodities: commodities.sort(),
-        markets: markets.sort(),
+        commodities,
+        markets,
+        combinations,
+        pairs: pairsList,
       },
     });
   } catch (error) {
@@ -60,6 +90,13 @@ export const getForecast = async (req, res, next) => {
     }
 
     const forecast = await getOrGenerateForecast(commodity, market, parseInt(horizon), false);
+
+    if (!forecast) {
+      return res.status(404).json({
+        success: false,
+        message: `No price data available for commodity ${commodity} in market ${market}`,
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -104,6 +141,12 @@ export const getAdvisor = async (req, res, next) => {
 
     // Get forecast
     const forecast = await getOrGenerateForecast(commodity, market, 14, false);
+    if (!forecast) {
+      return res.status(404).json({
+        success: false,
+        message: 'No forecast data available for specified commodity and market',
+      });
+    }
     const points = forecast.points || [];
 
     let bestDayIndex = 0;

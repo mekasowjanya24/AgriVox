@@ -10,24 +10,24 @@ export const connectDB = async (customUri = null) => {
   const safeUri = uri.replace(/\/\/[^@]+@/, '//***:***@');
 
   try {
-    if (uri) {
+    if (uri && process.env.NODE_ENV !== 'test') {
       // 10s timeout allows MongoDB Atlas cloud handshake and replica set election
       await mongoose.connect(uri, {
-        serverSelectionTimeoutMS: 10000,
+        serverSelectionTimeoutMS: 5000,
       });
       console.log(`[AgriVox] Successfully connected to MongoDB at: ${safeUri}`);
       return;
     }
   } catch (err) {
     console.error(`[AgriVox] MongoDB connection error (${safeUri}):`, err.message);
-    if (isProduction || process.env.MONGO_URI) {
-      // In production or when explicit MONGO_URI is set, do not silently fallback to ephemeral memory DB
+    if (isProduction || (process.env.MONGO_URI && !uri.includes('127.0.0.1') && process.env.NODE_ENV !== 'test')) {
+      // In production or when explicit Atlas MONGO_URI is set, do not silently fallback to ephemeral memory DB
       throw new Error(`Failed to connect to MongoDB Atlas (${safeUri}): ${err.message}`);
     }
     console.warn('[AgriVox] Falling back to In-Memory MongoDB for local development/testing...');
   }
 
-  // Fallback to MongoMemoryServer only in non-production local development
+  // Fallback to MongoMemoryServer only in non-production local development/testing
   if (mongoose.connection.readyState === 0 && !isProduction) {
     try {
       const { MongoMemoryServer } = await import('mongodb-memory-server');

@@ -185,7 +185,9 @@
     "allPrices": "All Recorded Prices",
     "extraGainPerQtl": "+{{amount}} / Quintal projected extra gain",
     "totalGainForStock": "Total projected extra profit for {{qty}} Quintals:",
-    "loadError": "Failed to load price data: "
+    "loadError": "Failed to load price data: ",
+    "noPricesYet": "No prices for this crop and market yet",
+    "noPricesSub": "Price trends and forecasts will appear here once mandi records are updated."
   },
   "advisor": {
     "title": "Smart Market Selling Advisor",

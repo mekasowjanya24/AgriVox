@@ -12,6 +12,8 @@ import Expense from '../src/models/Expense.js';
 import Harvest from '../src/models/Harvest.js';
 import Price from '../src/models/Price.js';
 
+import { runSeed } from '../src/seed/seed.js';
+
 let farmerToken = '';
 let adminToken = '';
 let farmerId = '';
@@ -19,7 +21,12 @@ let testPlotId = '';
 let testCycleId = '';
 
 beforeAll(async () => {
+  process.env.NODE_ENV = 'test';
   await connectDB();
+  const existingFarmer = await User.findOne({ phone: '8888888888' });
+  if (!existingFarmer) {
+    await runSeed();
+  }
   // Clean up any previous test artifacts
   await User.deleteMany({ phone: '7777777777' });
   await Plot.deleteMany({ clientId: 'plot-uuid-test-123' });
@@ -326,5 +333,54 @@ describe('5. PDF Report & Admin CSV Upload', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.total).toBe(1);
+  });
+});
+
+describe('6. Prices Metadata & Combinations (FR-PR-02)', () => {
+  it('FR-PR-02: should return only commodities and markets with actual price data', async () => {
+    const res = await request(app).get('/api/prices/meta');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.commodities).toContain('Paddy');
+    expect(res.body.data.commodities).toContain('Cotton');
+    expect(res.body.data.markets).toContain('Warangal');
+    expect(res.body.data.markets).toContain('Khammam');
+
+    // Combinations map
+    expect(res.body.data.combinations).toBeDefined();
+    expect(res.body.data.combinations.Paddy).toContain('Warangal');
+    expect(res.body.data.combinations.Paddy).toContain('Khammam');
+  });
+
+  it('should return price history for Paddy in Warangal', async () => {
+    const res = await request(app).get('/api/prices?commodity=Paddy&market=Warangal&limit=10');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].commodity).toBe('Paddy');
+    expect(res.body.data[0].market).toBe('Warangal');
+  });
+
+  it('should handle forecast cleanly with fallback when ML service is offline', async () => {
+    const res = await request(app)
+      .get('/api/prices/forecast?commodity=Paddy&market=Warangal&horizon=14')
+      .set('Authorization', `Bearer ${farmerToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.points.length).toBe(14);
+    expect(res.body.data.commodity).toBe('Paddy');
+    expect(res.body.data.market).toBe('Warangal');
+  });
+
+  it('should return 404 when requesting forecast for non-existent commodity', async () => {
+    const res = await request(app)
+      .get('/api/prices/forecast?commodity=NonExistentCropXYZ&market=Warangal')
+      .set('Authorization', `Bearer ${farmerToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
   });
 });

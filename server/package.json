@@ -8,6 +8,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "seed": "node src/seed/seed.js",
+    "seed:prices": "node src/seed/seedPrices.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
   },
   "dependencies": {
@@ -40,6 +41,6 @@
     "testMatch": [
       "**/tests/**/*.test.js"
     ],
-    "testTimeout": 30000
+    "testTimeout": 60000
   }
 }

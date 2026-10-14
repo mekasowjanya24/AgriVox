@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "seed:prices": "npm --prefix server run seed:prices"
+  },
   "devDependencies": {
     "puppeteer-core": "^25.13.0"
   }
